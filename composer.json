@@ -1,0 +1,8 @@
+{	
+	"name": "Phalcon",
+	"description": "The Phalcon Framework.",
+	"license": "MIT",
+	"require": {
+		"silex/silex": "~1.1"
+	}
+}
