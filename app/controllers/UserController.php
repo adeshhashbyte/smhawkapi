@@ -1,6 +1,7 @@
 <?php
-
+use Phalcon\Http\Response;
 class UserController extends \Phalcon\Mvc\Controller
+
 {
 	public function initialize() {
 		$this->view->disable();
@@ -44,6 +45,18 @@ class UserController extends \Phalcon\Mvc\Controller
 			$this->response->send();	
 		}
 	}
+	
+	public function helloAction(){
+	
+	//$data = $this->request->getJsonRawBody();
+	$email = $this->request->getPost('email');
+	//$response = new Response();
+	$this->response->setContentType('application/json');
+	//$this->$response->setJsonContent(array('status' => 'OK', 'data' => $email));
+	$this->response->setContent(json_encode(array('hello')));
+			$this->response->send();
+	}
+	
 
 
 }

@@ -3,8 +3,8 @@
 	RewriteRule  ^$ public/    [L]
 	RewriteRule  (.*) public/$1 [L]
 </IfModule>
-<IfModule mod_headers.c>
-    Header set Access-Control-Allow-Origin "*"
-    Header set Access-Control-Allow-Methods "DELETE, PUT, GET"
-    Header set Access-Control-Allow-Headers: "X-Requested-With, Content-Type"
-</IfModule> 
+<ifModule mod_headers.c>
+    Header always set Access-Control-Allow-Origin: "*"
+    Header always set Access-Control-Allow-Methods "POST, GET, PUT, DELETE, OPTIONS"
+    Header always set Access-Control-Allow-Headers "X-Requested-With, content-type"
+</ifModule>
