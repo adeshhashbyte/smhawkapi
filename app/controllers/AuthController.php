@@ -66,6 +66,10 @@ class AuthController extends \Phalcon\Mvc\Controller
 					'first_name'=>$user->first_name,
 					'last_name'=>$user->last_name,
 					);
+				$data['history']=array(
+					'used'=>$user->smsbalance->used,
+					'balance'=>$user->smsbalance->balance,
+					);
 			}else{
 				$user = new User();
 				$user->email=$email;

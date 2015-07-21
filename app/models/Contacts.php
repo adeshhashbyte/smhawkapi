@@ -71,7 +71,10 @@ class Contacts extends \Phalcon\Mvc\Model
             return false;
         }
     }
-
+    public function initialize()
+    {
+        $this->belongsTo("id", "GroupContact", "contact_id");
+    }
     /**
      * Independent Column Mapping.
      */

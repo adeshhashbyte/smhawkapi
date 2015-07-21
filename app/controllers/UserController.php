@@ -45,19 +45,23 @@ class UserController extends \Phalcon\Mvc\Controller
 			$this->response->send();	
 		}
 	}
-	
-	public function helloAction(){
-	
-	//$data = $this->request->getJsonRawBody();
-	$email = $this->request->getPost('email');
-	//$response = new Response();
-	$this->response->setContentType('application/json');
-	//$this->$response->setJsonContent(array('status' => 'OK', 'data' => $email));
-	$this->response->setContent(json_encode(array('hello')));
-			$this->response->send();
+	public function grouplistAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$user_id = $this->request->getPost('user_id');
+			$group_list = Groups::find("user_id=$user_id");
+			$groups = array();
+			foreach ($group_list as $group_data) {
+				$groups[]=array(
+					'id'=>$group_data->id,
+					'name'=>$group_data->name,
+					'user_id'=>$group_data->user_id,
+					'count'=>count($group_data->groupcontact)
+					);
+			}
+			$this->response->setContent(json_encode(array('group_list'=>$groups)));
+			$this->response->send();	
+		}
 	}
-	
-
-
 }
 

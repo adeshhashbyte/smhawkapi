@@ -156,10 +156,10 @@ class Users extends \Phalcon\Mvc\Model
     {
         $this->hasOne("id", "SmsBalance", "user_id");
     }
-    public function getSmsBalance($parameters=null)
-    {
-        return $this->getRelated('RobotsParts', $parameters);
-    }
+    // public function getSmsBalance($parameters=null)
+    // {
+    //     return $this->getRelated('SmsBalance', 'id');
+    // }
     public function validation()
     {
 
