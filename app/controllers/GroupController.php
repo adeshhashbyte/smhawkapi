@@ -27,4 +27,20 @@ class GroupController extends \Phalcon\Mvc\Controller
 			$this->response->send();	
 		}
 	}
+	public function grouphistoryAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+		 	$group_id = $this->request->getPost('group_id');
+			$grouphistory = SmsHistory::find("group_id='$group_id'");
+			$groupsmshistory = array();
+			foreach ($grouphistory as $history) {
+				$groupsmshistory[]=array(
+					'group_id'=>$history->group_id,
+					'msg'=>urldecode($history->message),
+					);
+			}
+			$this->response->setContent(json_encode(array('groupsmshistory'=>$groupsmshistory)));
+			$this->response->send();	
+		}
+	}
 }

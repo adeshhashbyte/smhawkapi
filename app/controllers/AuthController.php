@@ -24,7 +24,17 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'status'=>'success',
 						'msg'=>'login success',
 						'code'=>2,
-						'user_id'=>$user->id
+						'user_id'=>$user->id,
+						'first_name'=>$user->first_name,
+						'last_name'=>$user->last_name,
+						'sender_id'=>$user->sender_id,
+						'company'=>$user->company,
+						'email'=>$user->email,
+						'number'=>$user->number
+						);
+					$data['history']=array(
+						'used'=>$user->smsbalance->used,
+						'balance'=>$user->smsbalance->balance,
 						);
 				}else{
 					$data = array(
@@ -65,6 +75,10 @@ class AuthController extends \Phalcon\Mvc\Controller
 					'user_id'=>$user->id,
 					'first_name'=>$user->first_name,
 					'last_name'=>$user->last_name,
+					'sender_id'=>$user->sender_id,
+					'company'=>$user->company,
+					'email'=>$user->email,
+					'number'=>$user->number
 					);
 				$data['history']=array(
 					'used'=>$user->smsbalance->used,
@@ -87,6 +101,10 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'user_id'=>$user->id,
 						'first_name'=>$user->first_name,
 						'last_name'=>$user->last_name,
+						'sender_id'=>$user->sender_id,
+						'company'=>$user->company,
+						'email'=>$user->email,
+						'number'=>$user->number
 						);
 				}
 			}
