@@ -5,8 +5,8 @@ return new \Phalcon\Config(array(
         'adapter'     => 'Mysql',
         'host'        => 'localhost',
         'username'    => 'root',
-        'password'    => 'root',
-        'dbname'      => 'smhawk_live',
+        'password'    => 'db_h@s#3rs',
+        'dbname'      => 'smhawk',
         ),
     'application' => array(
         'controllersDir' => __DIR__ . '/../../app/controllers/',
