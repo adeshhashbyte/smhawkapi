@@ -63,5 +63,58 @@ class UserController extends \Phalcon\Mvc\Controller
 			$this->response->send();	
 		}
 	}
+
+	public function updateGeneralSettingAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$user_id = $this->request->getPost('user_id');
+			$company = $this->request->getPost('company');
+			$firstname = $this->request->getPost('first_name');
+			$password = $this->request->getPost('password');
+			$user = Users::findFirst("id = '$user_id'");
+			$user->first_name = $firstname;
+			$user->company = $company;
+			$user->password = $this->security->hash($password);
+			if($user->save()){
+				$data = array(
+					'status'=>'success',
+					'user_id'=>$user->id,
+					'first_name'=>$user->first_name,
+					'last_name'=>$user->last_name,
+					'sender_id'=>$user->sender_id,
+					'company'=>$user->company,
+					'email'=>$user->email,
+					'number'=>$user->number
+					);
+				$data['history']=array(
+					'used'=>$user->smsbalance->used,
+					'balance'=>$user->smsbalance->balance,
+					);
+				$this->response->setContent(json_encode($data));
+				$this->response->send();	
+			}
+		}
+	}
+
+	public function contactSettingAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$user_id = $this->request->getPost('user_id');
+			$email = $this->request->getPost('email');
+			$number = $this->request->getPost('number');
+			$user = Users::findFirst("id = '$user_id'");
+			$user->email = $email;
+			$user->number = $number;
+			if($user->save()){
+				$data = array(
+					'status'=>'success',
+					'email'=>$user->email,
+					'number'=>$user->number,
+					);
+			}
+			$this->response->setContent(json_encode($data));
+			$this->response->send();	
+		}
+	}
 }
 

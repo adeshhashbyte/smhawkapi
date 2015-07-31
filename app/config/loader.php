@@ -8,6 +8,8 @@ $loader = new \Phalcon\Loader();
 $loader->registerDirs(
     array(
         $config->application->controllersDir,
-        $config->application->modelsDir
+        $config->application->modelsDir,
+        $config->application->classeDir
     )
 )->register();
+// require __DIR__ . $config->application->vendorsDir . '/autoload.php';

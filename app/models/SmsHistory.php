@@ -1,5 +1,5 @@
 <?php
-
+use Phalcon\Mvc\Model\Behavior\Timestampable;
 class SmsHistory extends \Phalcon\Mvc\Model
 {
 
@@ -33,6 +33,18 @@ class SmsHistory extends \Phalcon\Mvc\Model
      */
     public $contact_ids;
 
+     /**
+     *
+     * @var string
+     */
+    public $reciever;
+
+    /**
+     *
+     * @var string
+     */
+    public $type;
+
     /**
      *
      * @var string
@@ -63,6 +75,23 @@ class SmsHistory extends \Phalcon\Mvc\Model
      */
     public $updated_at;
 
+    public function beforeValidationOnCreate()
+    {
+        //The account must be confirmed via e-mail
+        $this->group_id = 0;
+    }
+
+    public function beforeCreate()
+    {
+        $this->created_at = date("Y-m-d H:i:s");
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+
+    public function beforeUpdate()
+    {
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+    
     /**
      * Independent Column Mapping.
      */
@@ -74,6 +103,8 @@ class SmsHistory extends \Phalcon\Mvc\Model
             'group_id' => 'group_id', 
             'message' => 'message', 
             'contact_ids' => 'contact_ids', 
+            'reciever' => 'reciever', 
+            'type' => 'type', 
             'status' => 'status', 
             'count' => 'count', 
             'billcredit' => 'billcredit', 

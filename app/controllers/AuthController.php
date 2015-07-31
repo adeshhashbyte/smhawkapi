@@ -113,5 +113,67 @@ class AuthController extends \Phalcon\Mvc\Controller
 		}
 	}
 
+	public function signupAction(){
+		if ($this->request->isPost()) {
+			if ($this->request->getPost()) {
+				$this->response->setContentType('application/json');
+				$user = new Users();
+				$user->assign(array(
+					'first_name' => $this->request->getPost('first_name', 'striptags'),
+					'last_name' => $this->request->getPost('last_name', 'striptags'),
+					'email' => $this->request->getPost('email'),
+					// 'password' => $this->security->hash($this->request->getPost('password')),
+					));
+				if($user->save()){
+					$this->response->setContent(json_encode('success'));
+				}else{
+					$this->flash->error($user->getMessages());
+					$this->response->setContent(json_encode('error'));	
+				}
+				$this->response->send();	
+			}
+
+		}
+	}
+
+	/**
+         * Confirms an e-mail, if the user must change its password then changes it
+    */
+    public function confirmEmailAction()
+    {
+            $code = $this->dispatcher->getParam('code');
+            $confirmation = EmailConfirmations::findFirstByCode($code);
+            if (!$confirmation) {
+                    return $this->dispatcher->forward(array(
+                            'controller' => 'index',
+                            'action' => 'index'
+                    ));
+            }
+            if ($confirmation->confirmed <> 'N') {
+                $this->flash->success('The email was successfully confirmed. Now you must change your password');
+                return $this->dispatcher->forward(array(
+                        'controller' => 'session',
+                        'action' => 'login'
+                ));
+            }
+            //confirmation
+            $confirmation->confirmed = 'Y';
+            $confirmation->user->active = 1;
+            /**
+                 * Change the confirmation to 'confirmed' and update the user to 'active'
+            */
+            if ($confirmation->save()) {
+                    return $this->dispatcher->forward(array(
+                            'controller' => 'session',
+                            'action' => 'login'
+                    ));
+            }
+            else{
+                foreach ($confirmation->getMessages() as $message) {
+                        $this->flash->error($message);
+                }
+            }
+    }
+
 }
 

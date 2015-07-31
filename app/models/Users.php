@@ -149,12 +149,25 @@ class Users extends \Phalcon\Mvc\Model
      */
     public $avatar;
 
+     /**
+     * Before create the user assign a password
+     */
+    public function beforeValidationOnCreate()
+    {
+        //The account must be confirmed via e-mail
+        $this->activated = 0;
+        $this->contacts_invisible_mask = 0;
+        $this->admin_password_enable = 0;
+    }
+
+
     /**
      * Validations and business logic
      */
     public function initialize()
     {
         $this->hasOne("id", "SmsBalance", "user_id");
+        $this->hasMany("id", "EmailConfirmations", "userId");
     }
     // public function getSmsBalance($parameters=null)
     // {
@@ -168,11 +181,25 @@ class Users extends \Phalcon\Mvc\Model
                 array(
                     'field'    => 'email',
                     'required' => true,
+                    'message' => 'The email is already registered'
                 )
             )
         );
         if ($this->validationHasFailed() == true) {
             return false;
+        }
+    }
+
+    public function afterSave()
+    {
+        if ($this->activated == 0) {
+            $emailConfirmation = new EmailConfirmations();
+            $emailConfirmation->usersId = $this->id;
+            if ($emailConfirmation->save()) {
+                $this->getDI()->getFlash()->notice(
+                    '<h4> A confirmation mail has been sent to </h4> ' . $this->email
+                );
+            }
         }
     }
 

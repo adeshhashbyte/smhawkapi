@@ -42,6 +42,18 @@ class Groups extends \Phalcon\Mvc\Model
     /**
      * Independent Column Mapping.
      */
+
+    public function beforeCreate()
+    {
+        $this->created_at = date("Y-m-d H:i:s");
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+
+    public function beforeUpdate()
+    {
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+    
     public function initialize()
     {
         $this->hasMany("id", "GroupContact", "group_id");

@@ -43,4 +43,34 @@ class GroupController extends \Phalcon\Mvc\Controller
 			$this->response->send();	
 		}
 	}
+
+	public function creategroupAction(){
+		if ($this->request->isPost() == true) {
+			try{
+			$this->response->setContentType('application/json');
+		 	$groupname = $this->request->getPost('groupname', 'striptags');
+		 	$user_id = $this->request->getPost('user_id');
+		 	$group = new Groups();
+		 	$group->assign(array(
+		 		'user_id' => $user_id,
+		 		'name' => $groupname,
+		 		'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+		 		'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+		 		));
+		 	if($group->save()){
+		 		$data = array(
+						'status'=>'success',
+						'msg'=>'group created',
+						'code'=>2,
+						'group_name'=>$group->name,
+						);
+		 	}
+			$this->response->setContent(json_encode($data));
+			$this->response->send();	
+			}catch(Exception $ex){
+				$this->response->setContent(json_encode(array('error'=>$ex->getMessage())));
+				$this->response->send();
+			}
+		}
+	}
 }
