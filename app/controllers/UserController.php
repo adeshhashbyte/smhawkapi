@@ -74,7 +74,9 @@ class UserController extends \Phalcon\Mvc\Controller
 			$user = Users::findFirst("id = '$user_id'");
 			$user->first_name = $firstname;
 			$user->company = $company;
-			$user->password = $this->security->hash($password);
+			if($password!=undefined){
+				$user->password = $this->security->hash($password);
+			}
 			if($user->save()){
 				$data = array(
 					'status'=>'success',
@@ -113,6 +115,41 @@ class UserController extends \Phalcon\Mvc\Controller
 					);
 			}
 			$this->response->setContent(json_encode($data));
+			$this->response->send();	
+		}
+	}
+
+	public function createContactAction(){
+		if ($this->request->isPost() == true) {
+			try{
+				$this->response->setContentType('application/json');
+				$user_id = $this->request->getPost('user_id');
+				$email = $this->request->getPost('email');
+				if($email==undefined){
+					$email=null;
+				}
+				$number = $this->request->getPost('number');
+				$contact_name = $this->request->getPost('contact_name');
+				$contact = new Contacts();
+				$contact->assign(array(
+					'name' => $this->request->getPost('contact_name'),
+					'number' => $this->request->getPost('number', 'striptags'),
+					'user_id' => $this->request->getPost('user_id'),
+					'email' => $email,
+					'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+					'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+					));
+				if($contact->save()){
+					$data = array(
+						'status'=>'success',
+						'msg'=>'contact created',
+						'code'=>2
+						);
+					$this->response->setContent(json_encode($data));
+				}
+			}catch(Exception $ex){
+				$this->response->setContent(json_encode(array('error'=>$ex->getMessage())));	
+			}
 			$this->response->send();	
 		}
 	}

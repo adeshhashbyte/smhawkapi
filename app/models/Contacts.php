@@ -56,21 +56,24 @@ class Contacts extends \Phalcon\Mvc\Model
     /**
      * Validations and business logic
      */
-    public function validation()
+    public function beforeValidationOnCreate()
     {
-
-        $this->validate(
-            new Email(
-                array(
-                    'field'    => 'email',
-                    'required' => true,
-                )
-            )
-        );
-        if ($this->validationHasFailed() == true) {
-            return false;
-        }
+        //The account must be confirmed via e-mail
+        $this->deleted = 0;
     }
+
+    public function beforeCreate()
+    {
+        $this->created_at = date("Y-m-d H:i:s");
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+
+    public function beforeUpdate()
+    {
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+
+    
     public function initialize()
     {
         $this->belongsTo("id", "GroupContact", "contact_id");
