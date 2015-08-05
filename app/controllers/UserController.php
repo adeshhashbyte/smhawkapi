@@ -153,5 +153,31 @@ class UserController extends \Phalcon\Mvc\Controller
 			$this->response->send();	
 		}
 	}
+
+	public function deleteContactAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$user_id = $this->request->getPost('user_id');
+			$contact_ids = $this->request->getPost('contact_ids');
+			$contacts = Contacts::find('id IN ('.$contact_ids.')');
+			foreach($contacts as $contact){
+				$group_contacts = GroupContact::find('contact_id ='.$contact->id);
+				if($group_contacts != false){
+					foreach ($group_contacts as $group_contact) {
+						$group_contact->delete();
+					}
+				}
+				$contact->deleted =1;
+				$contact->save();
+			}
+			$data = array(
+				'status'=>'success',
+				'msg'=>'contact deleted',
+				'code'=>2
+				);
+			$this->response->setContent(json_encode($data));
+			$this->response->send();	
+		}
+	}
 }
 

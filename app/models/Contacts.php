@@ -95,4 +95,13 @@ class Contacts extends \Phalcon\Mvc\Model
         );
     }
 
+    public static function getContactName($contact_ids){
+        $name = array();
+        foreach ($contact_ids as $contact_id) {
+          $result = Contacts::findFirst("id= '$contact_id'");
+          $name[] = $result->name;
+        }
+        return implode(',',$name);
+    }
+
 }

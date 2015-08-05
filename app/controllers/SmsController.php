@@ -11,6 +11,66 @@ class SmsController extends \Phalcon\Mvc\Controller
 
 	}
 
+	public function sendQuickSMSAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$contact_ids = $this->request->getPost('contact_ids');
+			$contacts_ids = explode(',', $contact_ids);
+			$message = $this->request->getPost('message');
+			$sms_length = strlen($message);
+			$sms_credit = ($sms_length - $sms_length % 160) / 160 + 1;
+			$user_id = $this->request->getPost('user_id');
+			$user = Users::findFirst("id = '$user_id'");
+			$contacts = Contacts::find('id IN ('.$contact_ids.')');
+			$count = count($contacts_ids);
+			$billcredit_sms = $count * $sms_credit;
+			$numbers = array();
+			$contact_id = array();
+			foreach($contacts as $contact){
+				$numbers[] =$contact->number;
+				$contact_id[]=$contact->id;
+			}
+			if (empty($user->sender_id)) {
+				$sender_id = 'SMHAWK';
+			}else{
+				$sender_id = $user->sender_id;
+			}
+			if ($user->smsbalance->balance >= $billcredit_sms) {
+				$request_info = $this->sendSMSRequest(array(
+					'contact_list' => $numbers,
+					'sms' => $message,
+					'sender_id'=> $sender_id
+					));
+				$sms_history = new SmsHistory();
+				$sms_history->assign(array(
+					'user_id' => $user_id,
+					'reciever' => json_encode($contact_id),
+					'message' => urlencode($message),
+					'billcredit' => $billcredit_sms,
+					'count' => $count,
+					'type' =>"CONTACTID",
+					'status' => "SUCCESS",
+					'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+					'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+					));
+				$sms_history->save();
+				$user->smsbalance->balance = $user->smsbalance->balance - $billcredit_sms;
+				$user->smsbalance->used = $user->smsbalance->used + $billcredit_sms;
+				$user->smsbalance->save();
+				$data = array(
+					'status'=>'success',
+					'msg'=>'send sms',
+					'code'=>2
+					);
+			}
+			else{
+
+			}
+			$this->response->setContent(json_encode($data));
+			$this->response->send();
+		}
+	}
+
 	public function quicksmsAction(){
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
@@ -65,10 +125,6 @@ class SmsController extends \Phalcon\Mvc\Controller
 			$this->response->setContent(json_encode('success'));
 			$this->response->send();
 		}
-	}
-
-	public function groupsmsAction(){
-
 	}
 
 	private function sendSMSRequest($sms_data) {

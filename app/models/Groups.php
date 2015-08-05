@@ -71,4 +71,15 @@ class Groups extends \Phalcon\Mvc\Model
         );
     }
 
+    public static function getGroupName($group_ids){
+        $name = array();
+        foreach ($group_ids as $group_id) {
+        $result = Groups::findFirst("id= '$group_id'");
+        if($result->id){
+        $name[] = $result->name;
+        }
+        }
+        return implode(',',$name);
+    }
+
 }
