@@ -125,9 +125,9 @@ class UserController extends \Phalcon\Mvc\Controller
 				$this->response->setContentType('application/json');
 				$user_id = $this->request->getPost('user_id');
 				$email = $this->request->getPost('email');
-				if($email==undefined){
-					$email=null;
-				}
+				// if($email==undefined){
+				// 	$email=null;
+				// }
 				$number = $this->request->getPost('number');
 				$contact_name = $this->request->getPost('contact_name');
 				$contact = new Contacts();
