@@ -31,9 +31,9 @@ class HistoryController extends \Phalcon\Mvc\Controller
 			$this->response->setContentType('application/json');
 			$user_id = $this->request->getPost("user_id");
 			$history = SmsHistory::find(array(
-            'conditions' => "user_id = '$user_id' GROUP BY reciever ORDER BY created_at DESC",
-            'columns' => 'id, message, reciever,type,status,billcredit,created_at,updated_at,COUNT(*) counts'
-            ));
+				'conditions' => "user_id = '$user_id' GROUP BY reciever ORDER BY updated_at DESC",
+				'columns' => 'id, message, reciever,type,status,billcredit,created_at,updated_at,COUNT(*) counts'
+				));
 			//$history = SmsHistory::find("user_id = '$user_id' GROUP BY reciever ORDER BY created_at DESC");
 			$user_history = array();
 			foreach ($history as $value) {
@@ -53,11 +53,54 @@ class HistoryController extends \Phalcon\Mvc\Controller
 					$user_history[] = array(
 						"id"=>$value->id,
 						"message" =>urldecode($value->message),
-						"time" =>$this->humanTiming($value->created_at),
+						"time" =>$this->humanTiming($value->updated_at),
 						"count" =>$value->counts,
 						"billcredit" =>$value->billcredit,
 						"name" =>$result,
+						"type" => $value->type,
+						"ids" => json_decode($value->reciever),
+						);
+				}
+			}
+			$this->response->setContent(json_encode(array('user_history'=>$user_history)));
+			$this->response->send();
+		}
+	}
+
+	public function historyByGroupAction(){ 
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$user_id = $this->request->getPost("user_id");
+			$type = $this->request->getPost("type");
+			$ids = explode(',', $this->request->getPost("ids"));
+			$history = SmsHistory::find(array(
+				'conditions' => "user_id = '$user_id' AND type = '$type' ORDER BY updated_at DESC",
+				'columns' => 'id, message, reciever,type,status,count,billcredit,created_at,updated_at',
+				));
+			$user_history = array();
+			foreach ($history as $value) {
+				switch($value->type)
+				{	
+					case 'GROUPID':
+					$result =Groups::getGroupName(json_decode($value->reciever));
+					break;
+					case 'NUMBER':
+					$result = implode(',',json_decode($value->reciever));
+					break;
+					case 'CONTACTID':
+					$result =Contacts::getContactName(json_decode($value->reciever));
+					break;
+				}
+				if($ids ==json_decode($value->reciever)){
+					$user_history[] = array(
+						"id"=>$value->id,
+						"message" =>urldecode($value->message),
+						// "time" =>$this->humanTiming($value->updated_at),
+						"count" =>$value->count,
+						"billcredit" =>$value->billcredit,
+						"name" =>$result,
 						$value->type => json_decode($value->reciever),
+						'date' => date('M d,Y, H:i A',strtotime($value->updated_at)),
 						);
 				}
 			}
