@@ -26,7 +26,7 @@ class HistoryController extends \Phalcon\Mvc\Controller
 		}
 	}
 
-	public function userHistoryByDateAction(){
+	public function userHistoryByDateAction(){ 
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
 			$user_id = $this->request->getPost("user_id");
