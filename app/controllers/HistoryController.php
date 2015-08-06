@@ -30,7 +30,11 @@ class HistoryController extends \Phalcon\Mvc\Controller
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
 			$user_id = $this->request->getPost("user_id");
-			$history = SmsHistory::find("user_id = '$user_id' ORDER BY created_at DESC");
+			$history = SmsHistory::find(array(
+            'conditions' => "user_id = '$user_id' GROUP BY reciever ORDER BY created_at DESC",
+            'columns' => 'id, message, reciever,type,status,billcredit,created_at,updated_at,COUNT(*) counts'
+            ));
+			//$history = SmsHistory::find("user_id = '$user_id' GROUP BY reciever ORDER BY created_at DESC");
 			$user_history = array();
 			foreach ($history as $value) {
 				switch($value->type)
@@ -47,11 +51,13 @@ class HistoryController extends \Phalcon\Mvc\Controller
 				}
 				if($result !=''){
 					$user_history[] = array(
+						"id"=>$value->id,
 						"message" =>urldecode($value->message),
 						"time" =>$this->humanTiming($value->created_at),
-						"count" =>$value->count,
+						"count" =>$value->counts,
 						"billcredit" =>$value->billcredit,
 						"name" =>$result,
+						$value->type => json_decode($value->reciever),
 						);
 				}
 			}
