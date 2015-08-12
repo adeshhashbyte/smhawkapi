@@ -11,15 +11,15 @@ class SmsController extends \Phalcon\Mvc\Controller
 
 	}
 
-	public function sendQuickSMSAction(){
+	public function sendSmsContactsAction(){
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
 			$contact_ids = $this->request->getPost('contact_ids');
-			$contacts_ids = explode(',', $contact_ids);
 			$message = $this->request->getPost('message');
+			$user_id = $this->request->getPost('user_id');
+			$contacts_ids = explode(',', $contact_ids);
 			$sms_length = strlen($message);
 			$sms_credit = ($sms_length - $sms_length % 160) / 160 + 1;
-			$user_id = $this->request->getPost('user_id');
 			$user = Users::findFirst("id = '$user_id'");
 			$contacts = Contacts::find('id IN ('.$contact_ids.')');
 			$count = count($contacts_ids);
@@ -44,6 +44,8 @@ class SmsController extends \Phalcon\Mvc\Controller
 				$sms_history = new SmsHistory();
 				$sms_history->assign(array(
 					'user_id' => $user_id,
+					'group_id'=> 0,
+					'contact_ids' => json_encode($contact_id),
 					'reciever' => json_encode($contact_id),
 					'message' => urlencode($message),
 					'billcredit' => $billcredit_sms,
@@ -58,13 +60,92 @@ class SmsController extends \Phalcon\Mvc\Controller
 				$user->smsbalance->used = $user->smsbalance->used + $billcredit_sms;
 				$user->smsbalance->save();
 				$data = array(
-					'status'=>'success',
-					'msg'=>'send sms',
-					'code'=>2
-					);
+						'status'=>'success',
+						'code'=>2,
+						'ids' => json_decode($sms_history->reciever),
+						'type' => $sms_history->type
+						);
+				$data['history']=array(
+						'used'=>$user->smsbalance->used,
+						'balance'=>$user->smsbalance->balance,
+						);
 			}
 			else{
+				$data = array(
+					'status'=>'error',
+					'code'=>1,
+					'message'=>'Insufficient Balance'
+					);
+			}
+			$this->response->setContent(json_encode($data));
+			$this->response->send();
+		}
+	}
 
+	public function sendGroupSmsAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$group_id = $this->request->getPost('group_id',"int");
+			$message = $this->request->getPost('message');
+			$user_id = $this->request->getPost('user_id');
+			$sms_length = strlen($message);
+			$sms_credit = ($sms_length - $sms_length % 160) / 160 + 1;
+			$user = Users::findFirst("id = '$user_id'");
+			$groucontact = GroupContact::find("group_id=$group_id");
+			$groucontactlist = array();
+			$groupid = array();
+			foreach ($groucontact as $group_data) {
+				$groucontactlist['number'][]=$group_data->contacts->number;
+			}
+			$count = count($groucontactlist['number']);
+			$billcredit_sms = $count * $sms_credit;
+			$numbers = array();
+			if (empty($user->sender_id)) {
+				$sender_id = 'SMHAWK';
+			}else{
+				$sender_id = $user->sender_id;
+			}
+			$groupid = explode(',', $group_id);
+			if ($user->smsbalance->balance >= $billcredit_sms) {
+				$request_info = $this->sendSMSRequest(array(
+					'contact_list' => $groucontactlist['number'],
+					'sms' => $message,
+					'sender_id'=> $sender_id
+					));
+				$sms_history = new SmsHistory();
+				$sms_history->assign(array(
+					'user_id' => $user_id,
+					'group_id'=> $group_id,
+					'reciever' => json_encode($groupid),
+					'message' => urlencode($message),
+					'billcredit' => $billcredit_sms,
+					'count' => $count,
+					'type' =>"GROUPID",
+					'status' => "SUCCESS",
+					'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+					'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+					));
+				$sms_history->save();
+				$user->smsbalance->balance = $user->smsbalance->balance - $billcredit_sms;
+				$user->smsbalance->used = $user->smsbalance->used + $billcredit_sms;
+				$user->smsbalance->save();
+				$data = array(
+						'status'=>'success',
+						'code'=>2,
+						'ids' => json_decode($sms_history->reciever),
+						'type' => $sms_history->type
+						);
+				$data['history']=array(
+						'used'=>$user->smsbalance->used,
+						'balance'=>$user->smsbalance->balance,
+						);
+			}
+			else{
+				$data = array(
+					'status'=>'error',
+					'code'=>1,
+					'message'=>'Insufficient Balance'
+					);
 			}
 			$this->response->setContent(json_encode($data));
 			$this->response->send();
@@ -99,6 +180,7 @@ class SmsController extends \Phalcon\Mvc\Controller
 				$sms_history = new SmsHistory();
 				$sms_history->assign(array(
 					'user_id' => $user_id,
+					'group_id'=> 0,
 					'reciever' => json_encode($contact_number),
 					'contact_ids' => json_encode($contact_number),
 					'message' => urlencode($message),

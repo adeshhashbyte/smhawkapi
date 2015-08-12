@@ -86,19 +86,19 @@ class GroupController extends \Phalcon\Mvc\Controller
 			$contacts ='';
 			$contacts =implode(',', $contact_ids);
 			if(count($contact_ids)>0){
-			$other_contacts = Contacts::find(array(
-				'conditions' => 'id NOT IN ('.$contacts.') AND user_id='.$user_id.' AND deleted=0',
-				'columns' => 'id,name,number,email'
-				));
+				$other_contacts = Contacts::find(array(
+					'conditions' => 'id NOT IN ('.$contacts.') AND user_id='.$user_id.' AND deleted=0',
+					'columns' => 'id,name,number,email'
+					));
 			}else{
 				$other_contacts = Contacts::find(array(
-				'conditions' => 'user_id='.$user_id.' AND deleted=0',
-				'columns' => 'id,name,number,email'
-				));
+					'conditions' => 'user_id='.$user_id.' AND deleted=0',
+					'columns' => 'id,name,number,email'
+					));
 			}
 			$morecontacts = array();
 			foreach($other_contacts as $other_contact){
-					$morecontacts[]=array(
+				$morecontacts[]=array(
 					'id'=> $other_contact->id,
 					'name'=> $other_contact->name,
 					'number'=> $other_contact->number,
@@ -120,20 +120,40 @@ class GroupController extends \Phalcon\Mvc\Controller
 			$contact_ids = $this->request->getPost('contact_ids');
 			$contacts =explode(',',$contact_ids);
 			foreach ($contacts as $contact_id) {
-			$groucontact = new GroupContact();
-			$groucontact->assign(array(
-				'group_id' => $group_id,
-				'contact_id' => $contact_id,
-				'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-				'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
-				));
-			$groucontact->save();
+				$groucontact = new GroupContact();
+				$groucontact->assign(array(
+					'group_id' => $group_id,
+					'contact_id' => $contact_id,
+					'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
+					'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+					));
+				$groucontact->save();
 			}
-			$this->response->setContent(json_encode(array('success'=>'success','code'=>'2')));
+			$this->response->setContent(json_encode(array('success'=>'success','code'=>'2','count'=>count($contacts))));
 			 // $this->flash->error($groucontact->getMessages());
 			$this->response->send();
 		}else{
+		}
+	}
 
+	public function removeGroupContactAction(){
+		if ($this->request->isPost() == true) {
+			$group_id = $this->request->getPost('group_id');
+			$user_id = $this->request->getPost('user_id');
+			$contact_ids = $this->request->getPost('contact_ids');
+			$contact_ids =explode(',',$contact_ids);
+			$group_contacts = array();
+			foreach ($contact_ids as $contact_id) {
+				$group_contacts= GroupContact::find('contact_id ='.$contact_id);
+				foreach ($group_contacts as $group) {
+					if($group_id==$group->group_id){
+						$group->delete();
+					}
+				}
+			}
+			$this->response->setContent(json_encode(array('success'=>'success','code'=>'2')));
+			$this->response->send();
+		}else{
 		}
 	}
 }

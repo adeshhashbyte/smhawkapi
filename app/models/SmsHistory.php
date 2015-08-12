@@ -75,11 +75,10 @@ class SmsHistory extends \Phalcon\Mvc\Model
      */
     public $updated_at;
 
-    public function beforeValidationOnCreate()
-    {
-        //The account must be confirmed via e-mail
-        $this->group_id = 0;
-    }
+    // public function beforeValidationOnCreate()
+    // {
+    //     $this->group_id = 0;
+    // }
 
     public function beforeCreate()
     {
