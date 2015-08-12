@@ -26,7 +26,7 @@ class UserController extends \Phalcon\Mvc\Controller
 		$this->response->setContent(json_encode($data));
 		$this->response->send();
 	}
-	public function contactlistAction(){
+	public function contactListAction(){
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
 			$user_id = $this->request->getPost('user_id');
@@ -34,15 +34,15 @@ class UserController extends \Phalcon\Mvc\Controller
 			$contact_data = array();
 			foreach ($contact_list as $contact) {
 				$contact_data[]=array(
-					'id'=>$contact->id,
-					'name'=>$contact->name,
-					'number'=>$contact->number,
-					'email'=>$contact->email,
-					'id'=>$contact->id,
+					'id'=> $contact->id,
+					'name'=> $contact->name,
+					'number'=> $contact->number,
+					'email'=> $contact->email,
+					'id'=> $contact->id
 					);
 			}
-			$this->response->setContent(json_encode(array('contact_list'=>$contact_data)));
-			$this->response->send();	
+			$this->response->setContent(json_encode(array('contact_list' => $contact_data)));
+			$this->response->send();
 		}
 	}
 	public function grouplistAction(){

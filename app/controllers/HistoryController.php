@@ -122,8 +122,8 @@ class HistoryController extends \Phalcon\Mvc\Controller
         	604800 => 'week',
         	86400 => 'day',
         	3600 => 'hour',
-        	60 => 'minute',
-        	1 => 'second'
+        	60 => 'min',
+        	1 => 'sec'
         	);
         foreach ($tokens as $unit => $text) {
         	if ($time < $unit) continue;
