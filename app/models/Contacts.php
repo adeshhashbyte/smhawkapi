@@ -104,4 +104,13 @@ class Contacts extends \Phalcon\Mvc\Model
         return implode(',',$name);
     }
 
+    public static function getContactNumber($contact_ids){
+        $numbers = array();
+        foreach ($contact_ids as $contact_id) {
+          $result = Contacts::findFirst("id= '$contact_id'");
+          $numbers[] = $result->number;
+        }
+        return $numbers;
+    }
+
 }

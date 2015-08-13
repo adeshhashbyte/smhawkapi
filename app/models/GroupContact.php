@@ -60,7 +60,18 @@ class GroupContact extends \Phalcon\Mvc\Model
             'contact_id' => 'contact_id', 
             'created_at' => 'created_at', 
             'updated_at' => 'updated_at'
-        );
+            );
     }
 
+    public static function getGroupContacts($group_ids){
+        foreach ($group_ids as $group_id) {
+            $groucontact = GroupContact::find("group_id=$group_id");
+            $groucontactlist = array();
+            foreach ($groucontact as $group_data) {
+                $groucontactlist[]=$group_data->contacts->number;
+            }
+        }
+        return $groucontactlist;
+
+    }
 }
