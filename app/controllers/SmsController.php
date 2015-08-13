@@ -156,9 +156,9 @@ class SmsController extends \Phalcon\Mvc\Controller
 				'sender_id' => $sms_data['sender_id'],
 				);
 		}
-		// foreach ($data as $send_sms_data) {
-		// 	$response = $sendmsgservice->sendSMS($send_sms_data);
-		// }
+		foreach ($data as $send_sms_data) {
+			$response = $sendmsgservice->sendSMS($send_sms_data);
+		}
 		$return = array('do_send_sms' => $do_send_sms);
 		return $return;
 	}
