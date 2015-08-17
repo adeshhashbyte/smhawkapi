@@ -117,19 +117,37 @@ class AuthController extends \Phalcon\Mvc\Controller
 		if ($this->request->isPost()) {
 			if ($this->request->getPost()) {
 				$this->response->setContentType('application/json');
-				$user = new Users();
-				$user->assign(array(
-					'first_name' => $this->request->getPost('first_name', 'striptags'),
-					'last_name' => $this->request->getPost('last_name', 'striptags'),
-					'email' => $this->request->getPost('email'),
-					// 'password' => $this->security->hash($this->request->getPost('password')),
-					));
-				if($user->save()){
-					$this->response->setContent(json_encode('success'));
+				$email = $this->request->getPost('email', 'striptags');
+				if(!Users::findFirst("email = '$email'")){
+					$user = new Users();
+					$user->assign(array(
+						'first_name' => $this->request->getPost('firstname', 'striptags'),
+						'last_name' => $this->request->getPost('lastname', 'striptags'),
+						'email' => $this->request->getPost('email', 'striptags'),
+						'password' => $this->security->hash('changeme')
+						));
+					if($user->save()){
+						$data = array(
+							'code'=>1,
+							'msg'=>'A confirmation mail has been sent to' . $user->email,
+							'status'=>'success',
+							);
+
+					}else{
+						$data = array(
+							'code'=>2,
+							'msg'=>'something went wrong',
+							'status'=>'error',
+							);
+					}
 				}else{
-					$this->flash->error($user->getMessages());
-					$this->response->setContent(json_encode('error'));	
+					$data = array(
+						'code'=>2,
+						'msg'=>'Already Exist',
+						'status'=>'error',
+						);
 				}
+				$this->response->setContent(json_encode($data));
 				$this->response->send();	
 			}
 
@@ -139,41 +157,37 @@ class AuthController extends \Phalcon\Mvc\Controller
 	/**
          * Confirms an e-mail, if the user must change its password then changes it
     */
-    public function confirmEmailAction()
-    {
-            $code = $this->dispatcher->getParam('code');
-            $confirmation = EmailConfirmations::findFirstByCode($code);
-            if (!$confirmation) {
-                    return $this->dispatcher->forward(array(
-                            'controller' => 'index',
-                            'action' => 'index'
-                    ));
-            }
-            if ($confirmation->confirmed <> 'N') {
-                $this->flash->success('The email was successfully confirmed. Now you must change your password');
-                return $this->dispatcher->forward(array(
-                        'controller' => 'session',
-                        'action' => 'login'
-                ));
-            }
-            //confirmation
-            $confirmation->confirmed = 'Y';
-            $confirmation->user->active = 1;
-            /**
-                 * Change the confirmation to 'confirmed' and update the user to 'active'
-            */
-            if ($confirmation->save()) {
-                    return $this->dispatcher->forward(array(
-                            'controller' => 'session',
-                            'action' => 'login'
-                    ));
-            }
-            else{
-                foreach ($confirmation->getMessages() as $message) {
-                        $this->flash->error($message);
-                }
-            }
-    }
+	public function confirmEmail2Action()
+	{
+		if ($this->request->isPost()) {
+			if ($this->request->getPost()) {
+				$this->response->setContentType('application/json');
+				$code =  $this->request->getPost('code');
+				$confirmation = EmailConfirmations::findFirstByCode($code);
+				if (!$confirmation) {
+					$data = array(
+						'code'=>1,
+						'status'=>'error',
+						'msg'=>'invalid code',
+						);
+				}else{
+					if ($confirmation->confirmed <> 'N') {
+						$confirmation->confirmed = 'Y';
+						$confirmation->user->activated = 1;
+						$confirmation->code = 'ffghfghfhf';
+						$confirmation->save();
+						$data = array(
+							'code'=>2,
+							'status'=>'success',
+							'msg'=>'The email was successfully confirmed. Now you must change your password',
+							);
+					}
+				}
+				$this->response->setContent(json_encode($data));
+				$this->response->send();
+			}
+		}
+	}
 
 }
 

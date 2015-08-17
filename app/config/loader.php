@@ -9,7 +9,8 @@ $loader->registerDirs(
     array(
         $config->application->controllersDir,
         $config->application->modelsDir,
-        $config->application->classeDir
+        $config->application->classeDir,
+        $config->application->libraryDir
     )
 )->register();
 // require __DIR__ . $config->application->vendorsDir . '/autoload.php';

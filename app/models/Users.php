@@ -156,6 +156,7 @@ class Users extends \Phalcon\Mvc\Model
     {
         //The account must be confirmed via e-mail
         $this->activated = 0;
+        $this->sender_id ='SMHAWK';
         $this->contacts_invisible_mask = 0;
         $this->admin_password_enable = 0;
     }
@@ -169,10 +170,7 @@ class Users extends \Phalcon\Mvc\Model
         $this->hasOne("id", "SmsBalance", "user_id");
         $this->hasMany("id", "EmailConfirmations", "userId");
     }
-    // public function getSmsBalance($parameters=null)
-    // {
-    //     return $this->getRelated('SmsBalance', 'id');
-    // }
+   
     public function validation()
     {
 
@@ -196,9 +194,7 @@ class Users extends \Phalcon\Mvc\Model
             $emailConfirmation = new EmailConfirmations();
             $emailConfirmation->usersId = $this->id;
             if ($emailConfirmation->save()) {
-                $this->getDI()->getFlash()->notice(
-                    '<h4> A confirmation mail has been sent to </h4> ' . $this->email
-                );
+               return true;
             }
         }
     }

@@ -12,7 +12,7 @@ use Phalcon\Session\Adapter\Files as SessionAdapter;
  * The FactoryDefault Dependency Injector automatically register the right services providing a full stack framework
  */
 $di = new FactoryDefault();
-
+$di->set('config', $config);
 /**
  * The URL component is used to generate all kind of urls in the application
  */
@@ -77,4 +77,13 @@ $di->set('session', function () {
     $session->start();
 
     return $session;
+});
+$di->set('mail', function(){
+        return new Mail();
+});
+/**
+ * Loading routes from the routes.php file
+ */
+$di->set('router', function() {
+    return require __DIR__ . '/routers.php';
 });

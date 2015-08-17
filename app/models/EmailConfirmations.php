@@ -68,7 +68,9 @@ class EmailConfirmations extends \Phalcon\Mvc\Model
             "Please confirm your email",
             'confirmation',
             array(
-                'confirmUrl' => '/confirm/' . $this->code . '/' . $this->user->email
+                'confirmUrl' => '/confirm/' . $this->code . '/' . $this->user->email,
+                'content' => 'You are Almost There! Just Confirm Your Email',
+                'message' => 'You have successfully created a Phalcon account. To activate it, please click below to verify your email address',
             )
         );
     }

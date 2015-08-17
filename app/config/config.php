@@ -17,16 +17,15 @@ return new \Phalcon\Config(array(
         'cacheDir'       => __DIR__ . '/../../app/cache/',
         'classeDir'      => __DIR__ . '/../../app/classes/',
         'baseUri'        => '/phalconapi/',
+        'apiUri'        => 'm.smhawk.in/#'
         ),
-    'mail' =>array(
-        'fromName'       =>'SMHawk',
-        'fromEmail'      =>'adesh@hashbyte.com',
-        'smtp'      =>array(
-            'server'    =>'smtp.gmail.com',
-            'port'    =>'465',
-            'security'    =>'ssl',
-            'username'    =>'adesh@hashbyte.com',
-            'password'    =>'p@ssw0rD',
-            ),
-        )
+    'mail' => array(
+        'fromName'  =>  'SMHawk Support',
+        'fromEmail' =>  'info@smhawk.com',
+        'server'    =>  'smtp.gmail.com',
+        'port'      =>  '465',
+        'security'  =>  'ssl',
+        'username'  =>  'info@smhawk.com',
+        'password'  =>  'p@ssw0rd'
+        ),
     ));
