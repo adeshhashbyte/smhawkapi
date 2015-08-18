@@ -63,7 +63,7 @@ class EmailConfirmations extends \Phalcon\Mvc\Model
     {
         $this->getDI()->getMail()->send(
             array(
-                $this->user->email => $this->user->username
+                $this->user->email => $this->user->email
             ),
             "Please confirm your email",
             'confirmation',
@@ -71,6 +71,7 @@ class EmailConfirmations extends \Phalcon\Mvc\Model
                 'confirmUrl' => '/confirm/' . $this->code . '/' . $this->user->email,
                 'content' => 'You are Almost There! Just Confirm Your Email',
                 'message' => 'You have successfully created a Phalcon account. To activate it, please click below to verify your email address',
+                'action' => 'Confirm',
             )
         );
     }

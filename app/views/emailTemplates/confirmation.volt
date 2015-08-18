@@ -8,7 +8,7 @@
 
 				<br>
 				<br>
-				<a style="background:#E86537;color:#fff;padding:10px" href="http://{{ publicUrl }}{{ confirmUrl }}">Confirm</a>
+				<a style="background:#E86537;color:#fff;padding:10px" href="http://{{ publicUrl }}{{ confirmUrl }}">{{ action }}</a>
 
 				<br>
 				<br>

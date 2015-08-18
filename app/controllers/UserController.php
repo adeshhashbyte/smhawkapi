@@ -26,6 +26,43 @@ class UserController extends \Phalcon\Mvc\Controller
 		$this->response->setContent(json_encode($data));
 		$this->response->send();
 	}
+
+	public function passwordResetViaEmailAction()
+	{
+		$this->response->setContentType('application/json');
+		$email = $this->request->getPost('email');
+		$user = Users::findFirstByEmail($email);
+		if (!$user) {
+			$data = array(
+				'code'=>1,
+				'status'=>'error',
+				'msg'=>'Email Not Found',
+				);
+		}else{
+			$this->getDI()->getMail()->send(
+				array(
+					$user->email => $user->email
+					),
+				"Reset Your Password",
+				'confirmation',
+				array(
+					'confirmUrl' => '/change-password/'.$user->email,
+					'content' => 'You are Almost There! Just Reset Your Password',
+					'message' => 'please click below to reset your password',
+					'action' => 'Reset Password',
+					)
+				);
+			$data = array(
+				'code'=>2,
+				'status'=>'success',
+				'msg'=>'Mail has been sent to your email please reset your password',
+				);
+		}
+		$this->response->setContent(json_encode($data));
+		$this->response->send();
+	}
+
+
 	public function contactListAction(){
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');

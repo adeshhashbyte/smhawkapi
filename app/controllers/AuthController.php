@@ -171,7 +171,6 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'msg'=>'invalid code',
 						);
 				}else{
-					if ($confirmation->confirmed <> 'N') {
 						$confirmation->confirmed = 'Y';
 						$confirmation->user->activated = 1;
 						$confirmation->code = 'ffghfghfhf';
@@ -181,7 +180,6 @@ class AuthController extends \Phalcon\Mvc\Controller
 							'status'=>'success',
 							'msg'=>'The email was successfully confirmed. Now you must change your password',
 							);
-					}
 				}
 				$this->response->setContent(json_encode($data));
 				$this->response->send();
@@ -195,25 +193,22 @@ class AuthController extends \Phalcon\Mvc\Controller
 			if ($this->request->getPost()) {
 				$this->response->setContentType('application/json');
 				$email =  $this->request->getPost('email');
-				$confirmation = EmailConfirmations::findFirstByCode($code);
-				if (!$confirmation) {
+				$password =  $this->request->getPost('password');
+				$user = Users::findFirstByEmail($email);
+				if (!$user) {
 					$data = array(
 						'code'=>1,
 						'status'=>'error',
-						'msg'=>'invalid code',
+						'msg'=>'invalid email',
 						);
 				}else{
-					if ($confirmation->confirmed <> 'N') {
-						$confirmation->confirmed = 'Y';
-						$confirmation->user->activated = 1;
-						$confirmation->code = 'ffghfghfhf';
-						$confirmation->save();
+						$user->password = $this->security->hash($password);
+						$user->save();
 						$data = array(
 							'code'=>2,
 							'status'=>'success',
-							'msg'=>'The email was successfully confirmed. Now you must change your password',
+							'msg'=>'Password change successfully now you can login',
 							);
-					}
 				}
 				$this->response->setContent(json_encode($data));
 				$this->response->send();
