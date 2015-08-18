@@ -67,7 +67,6 @@ class AuthController extends \Phalcon\Mvc\Controller
 				$user->avatar=$image_url;
 				$user->first_name=$name;
 				$user->save();
-                //The password is valid
 				$data = array(
 					'status'=>'success',
 					'msg'=>'login success',
@@ -88,12 +87,20 @@ class AuthController extends \Phalcon\Mvc\Controller
 				$user = new User();
 				$user->email=$email;
 				$user->activated=1;
-				$user->password='changeme';
+				$user->password=$this->security->hash('changeme');
 				$user->avatar=$image_url;
 				$user->api_token=$authtoken;
-				$user->sender_id='SMHAWK';
 				$user->first_name=$name;
 				if($user->save()){
+					$smsbalance = new SmsBalance();
+					$smsbalance->assign(array(
+						'user_id' => $user->id,
+						'balance' => 0,
+						'used' => 0,
+						'created_at' => date("Y-m-d H:i:s"),
+						'updated_at' => date("Y-m-d H:i:s"),
+						));
+					$smsbalance->save();
 					$data = array(
 						'status'=>'success',
 						'msg'=>'user created',
@@ -127,6 +134,15 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'password' => $this->security->hash('changeme')
 						));
 					if($user->save()){
+						$smsbalance = new SmsBalance();
+						$smsbalance->assign(array(
+							'user_id' => $user->id,
+							'balance' => 0,
+							'used' => 0,
+							'created_at' => date("Y-m-d H:i:s"),
+							'updated_at' => date("Y-m-d H:i:s"),
+							));
+						$smsbalance->save();
 						$data = array(
 							'code'=>1,
 							'msg'=>'A confirmation mail has been sent to' . $user->email,
@@ -171,15 +187,15 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'msg'=>'invalid code',
 						);
 				}else{
-						$confirmation->confirmed = 'Y';
-						$confirmation->user->activated = 1;
-						$confirmation->code = 'ffghfghfhf';
-						$confirmation->save();
-						$data = array(
-							'code'=>2,
-							'status'=>'success',
-							'msg'=>'The email was successfully confirmed. Now you must change your password',
-							);
+					$confirmation->confirmed = 'Y';
+					$confirmation->user->activated = 1;
+					$confirmation->code = 'ffghfghfhf';
+					$confirmation->save();
+					$data = array(
+						'code'=>2,
+						'status'=>'success',
+						'msg'=>'The email was successfully confirmed. Now you must change your password',
+						);
 				}
 				$this->response->setContent(json_encode($data));
 				$this->response->send();
@@ -202,13 +218,13 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'msg'=>'invalid email',
 						);
 				}else{
-						$user->password = $this->security->hash($password);
-						$user->save();
-						$data = array(
-							'code'=>2,
-							'status'=>'success',
-							'msg'=>'Password change successfully now you can login',
-							);
+					$user->password = $this->security->hash($password);
+					$user->save();
+					$data = array(
+						'code'=>2,
+						'status'=>'success',
+						'msg'=>'Password change successfully now you can login',
+						);
 				}
 				$this->response->setContent(json_encode($data));
 				$this->response->send();

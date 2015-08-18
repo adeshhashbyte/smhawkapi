@@ -44,6 +44,12 @@ class SmsBalance extends \Phalcon\Mvc\Model
         $this->belongsTo("user_id", "Users", "id");
     }
 
+    public function beforeCreate()
+    {
+        $this->created_at = date("Y-m-d H:i:s");
+        $this->updated_at = date("Y-m-d H:i:s");
+    }
+
     /**
      * Independent Column Mapping.
      */
