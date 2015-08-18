@@ -189,5 +189,37 @@ class AuthController extends \Phalcon\Mvc\Controller
 		}
 	}
 
+	public function changePasswordAction()
+	{
+		if ($this->request->isPost()) {
+			if ($this->request->getPost()) {
+				$this->response->setContentType('application/json');
+				$email =  $this->request->getPost('email');
+				$confirmation = EmailConfirmations::findFirstByCode($code);
+				if (!$confirmation) {
+					$data = array(
+						'code'=>1,
+						'status'=>'error',
+						'msg'=>'invalid code',
+						);
+				}else{
+					if ($confirmation->confirmed <> 'N') {
+						$confirmation->confirmed = 'Y';
+						$confirmation->user->activated = 1;
+						$confirmation->code = 'ffghfghfhf';
+						$confirmation->save();
+						$data = array(
+							'code'=>2,
+							'status'=>'success',
+							'msg'=>'The email was successfully confirmed. Now you must change your password',
+							);
+					}
+				}
+				$this->response->setContent(json_encode($data));
+				$this->response->send();
+			}
+		}
+	}
+
 }
 
