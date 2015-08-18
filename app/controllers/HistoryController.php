@@ -30,11 +30,11 @@ class HistoryController extends \Phalcon\Mvc\Controller
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
 			$user_id = $this->request->getPost("user_id");
-			$history = SmsHistory::find(array(
-				'conditions' => "user_id = '$user_id' GROUP BY reciever ORDER BY updated_at DESC",
-				'columns' => 'id, message, reciever,type,status,billcredit,created_at,updated_at,COUNT(*) counts'
-				));
-			//$history = SmsHistory::find("user_id = '$user_id' GROUP BY reciever ORDER BY created_at DESC");
+			// $history = SmsHistory::find(array(
+			// 	'conditions' => "user_id = '$user_id' GROUP BY reciever ORDER BY updated_at DESC",
+			// 	'columns' => 'id, message, reciever,type,status,billcredit,created_at,updated_at,COUNT(*) counts'
+			// 	));
+			$history = SmsHistory::getData($user_id);
 			$user_history = array();
 			foreach ($history as $value) {
 				switch($value->type)

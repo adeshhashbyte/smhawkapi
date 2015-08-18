@@ -116,8 +116,8 @@ class SmsController extends \Phalcon\Mvc\Controller
 				'count' => $count,
 				'type' =>$smsdata['type'],
 				'status' => "SUCCESS",
-				'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-				'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+				'created_at' => date("Y-m-d H:i:s"),
+				'updated_at' => date("Y-m-d H:i:s")
 				));
 			$sms_history->save();
 			$user->smsbalance->balance = $user->smsbalance->balance - $billcredit_sms;

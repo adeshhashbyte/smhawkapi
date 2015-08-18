@@ -1,5 +1,6 @@
 <?php
 use Phalcon\Mvc\Model\Behavior\Timestampable;
+use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 class SmsHistory extends \Phalcon\Mvc\Model
 {
 
@@ -89,6 +90,12 @@ class SmsHistory extends \Phalcon\Mvc\Model
     public function beforeUpdate()
     {
         $this->updated_at = date("Y-m-d H:i:s");
+    }
+
+    public static function getData($user_id){
+        $sql = "SELECT p1.*,p2.counts FROM sms_history p1 INNER JOIN (SELECT max(id) MaxPostDate, reciever,COUNT(*) counts FROM sms_history GROUP BY reciever) p2  ON p1.reciever = p2.reciever AND p1.id = p2.MaxPostDate WHERE user_id = 5 order by p1.id desc";
+        $smshistory = new SmsHistory();
+        return new Resultset(null, $smshistory, $smshistory->getReadConnection()->query($sql));
     }
     
     /**
