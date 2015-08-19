@@ -156,4 +156,36 @@ class GroupController extends \Phalcon\Mvc\Controller
 		}else{
 		}
 	}
+
+	public function moveToGroupContactAction(){
+		if ($this->request->isPost() == true) {
+			$group_id = $this->request->getPost('group_id');
+			$contact_ids = $this->request->getPost('contact_ids');
+			$contacts =explode(',',$contact_ids);
+			$i=0;
+			foreach ($contacts as $contact_id) {
+				try {
+					$groucontact = new GroupContact();
+					$groucontact->assign(array(
+						'group_id' => $group_id,
+						'contact_id' => $contact_id,
+						'created_at' => date("Y-m-d H:i:s"),
+						'updated_at' =>date("Y-m-d H:i:s")
+						));
+					$groucontact->save();
+					$i++;
+					
+				} catch (Exception $ex) {
+					continue;
+				}
+			}
+			if($i==0){
+				$this->response->setContent(json_encode(array('success'=>'error','code'=>'1','msg'=>'Already Exist')));	
+			}else{
+				$this->response->setContent(json_encode(array('success'=>'success','code'=>'2','msg'=>$i.' Contacts Move Successfully')));
+			}
+			 // $this->flash->error($groucontact->getMessages());
+			$this->response->send();
+		}
+	}
 }
