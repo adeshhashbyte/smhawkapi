@@ -84,7 +84,7 @@ class AuthController extends \Phalcon\Mvc\Controller
 					'balance'=>$user->smsbalance->balance,
 					);
 			}else{
-				$user = new User();
+				$user = new Users();
 				$user->email=$email;
 				$user->activated=1;
 				$user->password=$this->security->hash('changeme');
@@ -114,9 +114,9 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'number'=>$user->number
 						);
 					$data['history']=array(
-					'used'=>$user->smsbalance->used,
-					'balance'=>$user->smsbalance->balance,
-					);
+						'used'=>$user->smsbalance->used,
+						'balance'=>$user->smsbalance->balance,
+						);
 				}
 			}
 			$this->response->setContent(json_encode($data));
@@ -135,9 +135,13 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'first_name' => $this->request->getPost('firstname', 'striptags'),
 						'last_name' => $this->request->getPost('lastname', 'striptags'),
 						'email' => $this->request->getPost('email', 'striptags'),
-						'password' => $this->security->hash('changeme')
+						'password' => $this->security->hash('changeme'),
+						'activated' => 0,
 						));
 					if($user->save()){
+						$emailConfirmation = new EmailConfirmations();
+						$emailConfirmation->usersId = $user->id;
+						$emailConfirmation->save();
 						$smsbalance = new SmsBalance();
 						$smsbalance->assign(array(
 							'user_id' => $user->id,

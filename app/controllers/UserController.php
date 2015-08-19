@@ -75,6 +75,7 @@ class UserController extends \Phalcon\Mvc\Controller
 					'name'=> $contact->name,
 					'number'=> $contact->number,
 					'email'=> $contact->email,
+					'address'=> $contact->address,
 					'id'=> $contact->id
 					);
 			}
@@ -162,33 +163,113 @@ class UserController extends \Phalcon\Mvc\Controller
 				$this->response->setContentType('application/json');
 				$user_id = $this->request->getPost('user_id');
 				$email = $this->request->getPost('email');
-				// if($email==undefined){
-				// 	$email=null;
-				// }
-				$number = $this->request->getPost('number');
+				$number = $this->request->getPost('number','striptags');
 				$contact_name = $this->request->getPost('contact_name');
+				$address = $this->request->getPost('address');
+				if($email==''||$email==null){
+					$email = null;
+				}
 				$contact = new Contacts();
+				$msg = 'contact created';
+				$contact_data = array(
+					'contact_name'=>$contact_name,
+					'email'=>$email,
+					'number'=>$number,
+					'address'=>$address,
+					'user_id'=>$user_id,
+					'msg'=>$msg,
+					);
 				$contact->assign(array(
-					'name' => $this->request->getPost('contact_name'),
-					'number' => $this->request->getPost('number', 'striptags'),
-					'user_id' => $this->request->getPost('user_id'),
+					'name' => $contact_name,
+					'number' => $number,
+					'user_id' => $user_id,
 					'email' => $email,
-					'created_at' => (new \DateTime())->format('Y-m-d H:i:s'),
-					'updated_at' =>(new \DateTime())->format('Y-m-d H:i:s')
+					'address' => $address,
 					));
 				if($contact->save()){
 					$data = array(
 						'status'=>'success',
-						'msg'=>'contact created',
+						'msg'=>$msg,
 						'code'=>2
 						);
-					$this->response->setContent(json_encode($data));
+				}else{
+					$data = $this->updateContact($contact_data);
 				}
 			}catch(Exception $ex){
-				$this->response->setContent(json_encode(array('error'=>$ex->getMessage())));	
+				$data = $this->updateContact($contact_data);
 			}
+			$this->response->setContent(json_encode($data));
 			$this->response->send();	
 		}
+	}
+
+	public function updateContactDataAction(){
+		if ($this->request->isPost() == true) {
+			try{
+				$this->response->setContentType('application/json');
+				$user_id = $this->request->getPost('user_id');
+				$email = $this->request->getPost('email');
+				$number = $this->request->getPost('number','striptags');
+				$contact_name = $this->request->getPost('contact_name');
+				$address = $this->request->getPost('address');
+				$id = $this->request->getPost('contact_id');
+				$contact =Contacts::findFirst("id='$id'");
+				if($email==''||$email==null){
+					$email = null;
+				}
+				$msg = 'contact updated';
+				$contact_data = array(
+					'contact_name'=>$contact_name,
+					'email'=>$email,
+					'number'=>$number,
+					'address'=>$address,
+					'user_id'=>$user_id,
+					'msg'=>$msg,
+					);
+				$contact->assign(array(
+					'name' => $contact_name,
+					'number' => $number,
+					'user_id' => $user_id,
+					'email' => $email,
+					'address' => $address,
+					));
+				$contact->save();
+				$data = array(
+					'status'=>'success',
+					'msg'=>$msg,
+					'code'=>2
+					);
+			}catch(Exception $ex){
+				$data = $this->updateContact($contact_data);
+			}
+			$this->response->setContent(json_encode($data));
+			$this->response->send();	
+		}	
+	}
+
+	private function updateContact($contact_data){
+		$number = $contact_data['number'];
+		$user_id = $contact_data['user_id'];
+		$contact =Contacts::findFirst("user_id=$user_id AND number LIKE '%$number%'");
+		if($contact->deleted==1){
+			$contact->name = $contact_data['contact_name'];
+			$contact->address =$contact_data['address'];
+			$contact->email =$contact_data['email'];
+			$contact->deleted = 0;
+			$contact->save();
+			$data = array(
+				'status'=>'success',
+				'msg'=>$contact_data['msg'],
+				'code'=>2
+				);
+		}else{
+			$data = array(
+				'status'=>'error',
+				'msg'=>'Already Exist',
+				'code'=>1
+				);
+		}
+		return $data;
 	}
 
 	public function deleteContactAction(){

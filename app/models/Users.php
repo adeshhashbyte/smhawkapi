@@ -155,7 +155,7 @@ class Users extends \Phalcon\Mvc\Model
     public function beforeValidationOnCreate()
     {
         //The account must be confirmed via e-mail
-        $this->activated = 0;
+        // $this->activated = 0;
         $this->sender_id ='SMHAWK';
         $this->contacts_invisible_mask = 0;
         $this->admin_password_enable = 0;
@@ -188,16 +188,16 @@ class Users extends \Phalcon\Mvc\Model
         }
     }
 
-    public function afterSave()
-    {
-        if ($this->activated == 0) {
-            $emailConfirmation = new EmailConfirmations();
-            $emailConfirmation->usersId = $this->id;
-            if ($emailConfirmation->save()) {
-               return true;
-            }
-        }
-    }
+    // public function afterSave()
+    // {
+    //     if ($this->activated == 0) {
+    //         $emailConfirmation = new EmailConfirmations();
+    //         $emailConfirmation->usersId = $this->id;
+    //         if ($emailConfirmation->save()) {
+    //            return true;
+    //         }
+    //     }
+    // }
 
     /**
      * Independent Column Mapping.

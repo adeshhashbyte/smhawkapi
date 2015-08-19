@@ -1,6 +1,7 @@
 <?php
 
 use Phalcon\Mvc\Model\Validator\Email as Email;
+use Phalcon\Mvc\Model\Resultset\Simple as Resultset;
 
 class Contacts extends \Phalcon\Mvc\Model
 {
@@ -35,6 +36,11 @@ class Contacts extends \Phalcon\Mvc\Model
      */
     public $number;
 
+    /**
+     *
+     * @var string
+     */
+    public $address;
     /**
      *
      * @var string
@@ -89,6 +95,7 @@ class Contacts extends \Phalcon\Mvc\Model
             'name' => 'name', 
             'email' => 'email', 
             'number' => 'number', 
+            'address' => 'address', 
             'deleted' => 'deleted', 
             'updated_at' => 'updated_at', 
             'created_at' => 'created_at'
@@ -111,6 +118,11 @@ class Contacts extends \Phalcon\Mvc\Model
           $numbers[] = $result->number;
         }
         return $numbers;
+    }
+    public static function getContactDeleted($user_id,$number){
+        $sql = "SELECT * FROM contacts WHERE user_id=$user_id AND number LIKE '%$number%'";
+        $contact = new Contacts();
+        return new Resultset(null, $contact, $contact->getReadConnection()->query($sql));
     }
 
 }
