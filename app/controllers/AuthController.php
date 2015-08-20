@@ -30,7 +30,9 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'sender_id'=>$user->sender_id,
 						'company'=>$user->company,
 						'email'=>$user->email,
-						'number'=>$user->number
+						'number'=>$user->number,
+						'admin_password_enable'=>$user->admin_password_enable,
+						'contacts_invisible_mask'=>$user->contacts_invisible_mask
 						);
 					$data['history']=array(
 						'used'=>$user->smsbalance->used,
@@ -77,7 +79,9 @@ class AuthController extends \Phalcon\Mvc\Controller
 					'sender_id'=>$user->sender_id,
 					'company'=>$user->company,
 					'email'=>$user->email,
-					'number'=>$user->number
+					'number'=>$user->number,
+					'admin_password_enable'=>$user->admin_password_enable,
+					'contacts_invisible_mask'=>$user->contacts_invisible_mask
 					);
 				$data['history']=array(
 					'used'=>$user->smsbalance->used,
@@ -111,7 +115,9 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'sender_id'=>$user->sender_id,
 						'company'=>$user->company,
 						'email'=>$user->email,
-						'number'=>$user->number
+						'number'=>$user->number,
+						'admin_password_enable'=>$user->admin_password_enable,
+						'contacts_invisible_mask'=>$user->contacts_invisible_mask
 						);
 					$data['history']=array(
 						'used'=>$user->smsbalance->used,

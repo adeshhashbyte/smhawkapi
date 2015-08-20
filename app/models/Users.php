@@ -168,6 +168,7 @@ class Users extends \Phalcon\Mvc\Model
     public function initialize()
     {
         $this->hasOne("id", "SmsBalance", "user_id");
+        $this->hasOne("id", "Profile", "user_id");
         $this->hasMany("id", "EmailConfirmations", "userId");
     }
    

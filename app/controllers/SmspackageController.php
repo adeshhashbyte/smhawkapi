@@ -26,6 +26,18 @@ class SmspackageController extends \Phalcon\Mvc\Controller
 		$this->response->send();
 	}
 
+	public function bonusPlansAction(){
+		$this->response->setContentType('application/json');
+		$bonus = array(
+			'5000'=>'5',
+			'10000'=>'10',
+			'20000'=>'20',
+			'50000'=>'25'
+			);
+		$this->response->setContent(json_encode(array('bonus'=>$bonus)));
+		$this->response->send();
+	}
+
 
 }
 

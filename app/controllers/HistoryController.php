@@ -132,5 +132,30 @@ class HistoryController extends \Phalcon\Mvc\Controller
         }
     }
 
+    public function userTransactionHistoryAction(){
+    	if ($this->request->isPost() == true) {
+    		$this->response->setContentType('application/json');
+    		$user_id = $this->request->getPost("user_id");
+    		$transactionhistory = TransactionHistory::find("user_id = '$user_id' ORDER BY updated_at DESC");
+    		$orders = array();
+    		if($transactionhistory){
+    			foreach ($transactionhistory as $history) {
+    				$orders[] = array(
+    					'invoice_id' => $history->id,
+    					'sms_credit' => $history->sms_credit,
+    					'amount' => $history->amount,
+    					'transation_id' => $history->txnid,
+    					'new_sms_balance' => $history->new_sms_balance,
+    					'date' => date('M d, Y',strtotime($history->updated_at)),
+    					'time' => date('M d,Y, H:i A',strtotime($history->updated_at)),
+    					);
+    			}
+    		}
+    		$this->response->setContent(json_encode(array('orders'=>$orders)));
+    		$this->response->send();
+    		
+    	}
+    }
+
 }
 

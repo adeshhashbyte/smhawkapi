@@ -108,11 +108,13 @@ class UserController extends \Phalcon\Mvc\Controller
 			$user_id = $this->request->getPost('user_id');
 			$company = $this->request->getPost('company');
 			$firstname = $this->request->getPost('first_name');
+			$last_name = $this->request->getPost('last_name');
 			$password = $this->request->getPost('password');
 			$user = Users::findFirst("id = '$user_id'");
 			$user->first_name = $firstname;
+			$user->last_name = $last_name;
 			$user->company = $company;
-			if($password!=undefined){
+			if($password!='none'){
 				$user->password = $this->security->hash($password);
 			}
 			if($user->save()){
@@ -124,7 +126,9 @@ class UserController extends \Phalcon\Mvc\Controller
 					'sender_id'=>$user->sender_id,
 					'company'=>$user->company,
 					'email'=>$user->email,
-					'number'=>$user->number
+					'number'=>$user->number,
+					'admin_password_enable'=>$user->admin_password_enable,
+					'contacts_invisible_mask'=>$user->contacts_invisible_mask
 					);
 				$data['history']=array(
 					'used'=>$user->smsbalance->used,
@@ -142,21 +146,59 @@ class UserController extends \Phalcon\Mvc\Controller
 			$user_id = $this->request->getPost('user_id');
 			$email = $this->request->getPost('email');
 			$number = $this->request->getPost('number');
-			$user = Users::findFirst("id = '$user_id'");
-			$user->email = $email;
-			$user->number = $number;
-			if($user->save()){
-				$data = array(
-					'status'=>'success',
-					'email'=>$user->email,
-					'number'=>$user->number,
-					);
+			// $user = Users::findFirst("id = '$user_id'");
+			$user = Users::findFirstByEmail($email);
+			if($user){
+				if($user->id!=$user_id){
+					$msg ="Already Exist";	
+				}else{
+					$msg = "kuch ni";
+					if($user->number!=$number){
+					$user->number = $number;
+					}
+				}
+			}else{
+				$msg ="emil bhejni h";
 			}
-			$this->response->setContent(json_encode($data));
+			// if($email==$anotheruser->id){
+			// $user->number = $number;
+			// }else{
+
+			// }
+			// $user->email = $email;
+			// if($user->save()){
+			// 	$data = array(
+			// 		'status'=>'success',
+			// 		'email'=>$user->email,
+			// 		'number'=>$user->number,
+			// 		);
+			// }
+			$this->response->setContent(json_encode($msg));
 			$this->response->send();	
 		}
 	}
 
+	public function userSecurityAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$user_id = $this->request->getPost('user_id');
+			$contactmask = $this->request->getPost('contactsecurity');
+			$admin_status = $this->request->getPost('adminsecurity');
+			$user = Users::findFirst("id = '$user_id'");
+			$user->contacts_invisible_mask = $contactmask;
+			$user->admin_password_enable = $admin_status;
+			if($user->save()){
+				$data = array(
+					'status'=>'success',
+					'msg' =>'Security Updted',
+					'contacts_invisible_mask'=>$user->contacts_invisible_mask,
+					'admin_password_enable'=>$user->admin_password_enable
+					);
+				$this->response->setContent(json_encode($data));
+				$this->response->send();	
+			}
+		}
+	}
 	public function createContactAction(){
 		if ($this->request->isPost() == true) {
 			try{
