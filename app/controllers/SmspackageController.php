@@ -49,7 +49,7 @@ class SmspackageController extends \Phalcon\Mvc\Controller
 		// $MERCHANT_KEY = "6cna40";
 		$name = $user->first_name;
          // $salt = "GQs7yium";
-		$SALT = "GQs7yium";
+		$salt = "GQs7yium";
 		// $salt = "FL37RYx9";
 		// $PAYU_BASE_URL = "https://secure.payu.in";
 		$PAYU_BASE_URL = "https://test.payu.in";
