@@ -20,4 +20,12 @@ $router->add('/payment-proccess', array(
         'controller' => 'smspackage',
         'action' => 'postPaymentProccess'
 ));
+$router->add('/payment-success', array(
+        'controller' => 'smspackage',
+        'action' => 'getPaymentSuccess'
+));
+$router->add('/payment-failer', array(
+        'controller' => 'smspackage',
+        'action' => 'getPaymentFailer'
+));
 return $router;
