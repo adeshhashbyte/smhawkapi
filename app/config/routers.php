@@ -16,4 +16,8 @@ $router->add('/order-history', array(
         'controller' => 'history',
         'action' => 'userTransactionHistory'
 ));
+$router->add('/payment-proccess', array(
+        'controller' => 'smspackage',
+        'action' => 'postPaymentProccess'
+));
 return $router;
