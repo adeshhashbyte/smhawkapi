@@ -5,7 +5,9 @@ return new \Phalcon\Config(array(
         'adapter'     => 'Mysql',
         'host'        => 'localhost',
         'username'    => 'root',
+        // 'password'    => 'root',
         'password'    => 'db_h@s#3rs',
+        // 'dbname'      => 'smhawk_live',
         'dbname'      => 'smhawk',
         ),
     'application' => array(
@@ -17,7 +19,7 @@ return new \Phalcon\Config(array(
         'cacheDir'       => __DIR__ . '/../../app/cache/',
         'classeDir'      => __DIR__ . '/../../app/classes/',
         'baseUri'        => '/phalconapi/',
-        'apiUri'        => 'm.smhawk.in/#'
+        'apiUri'        => 'http://m.smhawk.in/#/'
         ),
     'mail' => array(
         'fromName'  =>  'SMHawk Support',
