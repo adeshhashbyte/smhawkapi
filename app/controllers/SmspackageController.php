@@ -71,6 +71,88 @@ class SmspackageController extends \Phalcon\Mvc\Controller
 		$this->response->send();
 	}
 
+	public function getPaymentSuccessAction(){
+		if ($this->request->isPost()) {
+			$amount = $this->request->getPost('amount');
+			$status = $this->request->getPost('status');
+			$txnid = $this->request->getPost('txnid');
+			$smscredit = $this->request->getPost('udf1');
+			$gateway_txnid = $this->request->getPost('payuMoneyId');
+			$user = Users::findFirstByEmail($this->request->getPost('email'));
+			if($status == 'success'){
+				$user->smsbalance->balance =$user->smsbalance->balance + $smscredit;
+				$transactionhistory = new TransactionHistory();
+				$transactionhistory->amount = $amount;
+				$transactionhistory->user_id = $user->id;
+				$transactionhistory->sms_credit = $smscredit;
+				$transactionhistory->txnid = $txnid;
+				$transactionhistory->gateway_txnid = $gateway_txnid;
+				$transactionhistory->new_sms_balance = $user->smsbalance->balance;
+				$transactionhistory->status = 'SUCCESS';
+				$transactionhistory->created_at = date("Y-m-d H:i:s");
+				$transactionhistory->updated_at = date("Y-m-d H:i:s");
+				$transactionhistory->save();
+				$user->smsbalance->save();
+				$this->response->redirect($this->config->application->apiUri.'/payment-success/'.$txnid);
+			}else{
+				$this->response->redirect($this->config->application->apiUri.'/failed/'.$txnid);
+			}
+		}
+	}
+	public function getPaymentSuccessApiAction(){
+		if ($this->request->isPost()) {
+			$this->response->setContentType('application/json');
+			$txnid = $this->request->getPost('order_id');
+			$transaction = TransactionHistory::findFirstByTxnid($txnid);
+			if($transaction){
+				$order = array(
+					'invoice_id' => $transaction->id,
+					'code' => 1,
+					'sms_credit' => $transaction->sms_credit,
+					'amount' => $transaction->amount,
+					'transation_id' => $transaction->txnid,
+					'new_sms_balance' => $transaction->new_sms_balance,
+					'invoice_txnid' => $transaction->gateway_txnid,
+					'date' => date('M d, Y',strtotime($transaction->updated_at)),
+					);
+				$this->response->setContent(json_encode($order));
+			}else{
+				$data = array(
+					'code'=>2,
+					'msg'=>'Invalid Id',
+					);
+				$this->response->setContent(json_encode($data));
+			}
+			$this->response->send();
+		}
+	}
+	public function getPaymentFailerAction(){
+		$amount = $this->request->getPost('amount');
+		$status = $this->request->getPost('status');
+		$txnid = $this->request->getPost('txnid');
+		$smscredit = $this->request->getPost('udf1');
+		$gateway_txnid = $this->request->getPost('payuMoneyId');
+		$user = Users::findFirstByEmail($this->request->getPost('email'));
+		$transation = TransactionHistory::findFirstByGatewayTxnid($gateway_txnid);
+		if(!$transation){
+			$transactionhistory = new TransactionHistory();
+			$transactionhistory->amount = $amount;
+			$transactionhistory->user_id = $user->id;
+			$transactionhistory->sms_credit = $smscredit;
+			$transactionhistory->txnid = $txnid;
+			$transactionhistory->gateway_txnid = $gateway_txnid;
+			$transactionhistory->new_sms_balance = $user->smsbalance->balance;
+			$transactionhistory->status = 'FAILED';
+			$transactionhistory->created_at = date("Y-m-d H:i:s");
+			$transactionhistory->updated_at = date("Y-m-d H:i:s");
+			$transactionhistory->save();
+			// $this->flash->error($transactionhistory->getMessages());
+			$this->response->redirect($this->config->application->apiUri.'/payment-fail/'.$txnid);
+		}else{
+			$this->response->redirect($this->config->application->apiUri.'/payment-fail/'.$txnid);
+		}
+	}
+
 
 }
 

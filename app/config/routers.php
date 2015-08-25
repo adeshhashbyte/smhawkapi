@@ -24,6 +24,10 @@ $router->add('/payment-success', array(
         'controller' => 'smspackage',
         'action' => 'getPaymentSuccess'
 ));
+$router->add('/payment-success-api', array(
+        'controller' => 'smspackage',
+        'action' => 'getPaymentSuccessApi'
+));
 $router->add('/payment-failer', array(
         'controller' => 'smspackage',
         'action' => 'getPaymentFailer'
