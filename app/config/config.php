@@ -19,7 +19,7 @@ return new \Phalcon\Config(array(
         'cacheDir'       => __DIR__ . '/../../app/cache/',
         'classeDir'      => __DIR__ . '/../../app/classes/',
         'baseUri'        => '/phalconapi/',
-        'apiUri'        => 'http://m.smhawk.in/#/'
+        'apiUri'        => 'http://m.smhawk.in/#'
         ),
     'mail' => array(
         'fromName'  =>  'SMHawk Support',
