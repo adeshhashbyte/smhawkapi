@@ -32,4 +32,8 @@ $router->add('/payment-failer', array(
         'controller' => 'smspackage',
         'action' => 'getPaymentFailer'
 ));
+$router->add('/shedule-sms', array(
+        'controller' => 'sms',
+        'action' => 'sheduleSMS'
+));
 return $router;

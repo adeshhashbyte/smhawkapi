@@ -193,5 +193,86 @@ class SmsController extends \Phalcon\Mvc\Controller
 		}
 	}
 
+	public function sheduleSMSAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$contact_ids =$this->request->getPost('contact_ids');
+			$user_id = $this->request->getPost('user_id');
+			$message = $this->request->getPost('message');
+			$datetime = $this->request->getPost('datetime');
+			$timezone = 'UTC';
+			$scheduled_date_user_tz = new DateTime($datetime, new DateTimeZone($timezone));
+			$scheduled_date_user_tz->setTimezone(new DateTimeZone('UTC'));
+			$scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
+			$schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
+			$contacts_ids = explode(',', $contact_ids);
+			$contacts = Contacts::find('id IN ('.$contact_ids.')');
+			$numbers = array();
+			$contact_id = array();
+			foreach($contacts as $contact){
+				$numbers[] =$contact->number;
+				$contact_id[]=$contact->id;
+			}
+			print_r($schedule_date);die;
+			$data = $this->sheduleSMSProcessData(array(
+				'message' => $message,
+				'user_id' => $user_id,
+				'ids'=> $contact_id,
+				'type'=>"CONTACTID",
+				'contacts'=>$numbers,
+				'schedule_date'=>$schedule_date
+				));
+			$this->response->setContent(json_encode($data));
+			$this->response->send();
+		}
+	}
+
+	private function sheduleSMSProcessData($smsdata) {
+		$sms_length = strlen($smsdata['message']);
+		$sms_credit = ($sms_length - $sms_length % 160) / 160 + 1;
+		$user_id = $smsdata['user_id'];
+		$user = Users::findFirst("id = '$user_id'");
+		$count = count($smsdata['contacts']);
+		$billcredit_sms = $count * $sms_credit;
+		if (empty($user->sender_id)) {
+			$sender_id = 'SMHAWK';
+		}else{
+			$sender_id = $user->sender_id;
+		}
+		$group_id = 0;
+		if($smsdata['type']=="GROUPID"){
+			$group_id = implode(',', $smsdata['ids']);
+		}
+		$sms_history = new SmsHistory();
+		$sms_history->assign(array(
+			'user_id' => $user_id,
+			'group_id'=> $group_id,
+			'reciever' => json_encode($smsdata['ids']),
+			'contact_ids' => json_encode($smsdata['ids']),
+			'message' => urlencode($smsdata['message']),
+			'billcredit' => $billcredit_sms,
+			'count' => $count,
+			'type' =>$smsdata['type'],
+			'status' => "PENDING",
+			'created_at' => date("Y-m-d H:i:s"),
+			'updated_at' => date("Y-m-d H:i:s")
+			));
+		if($sms_history->save()){
+			$shedulesms = new SheduleSms();
+			$shedulesms->assign(array(
+				'sms_id' => $sms_history->id,
+				'shedule_date'=> $smsdata['schedule_date'],
+				'status' => "SHEDULED"
+				));
+			$shedulesms->save();
+		}
+		$data = array(
+			'status'=>'success',
+			'id'=>$shedulesms->id,
+			'code'=>2
+			);
+		return $data;
+	}
+
 }
 

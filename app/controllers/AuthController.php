@@ -187,8 +187,7 @@ class AuthController extends \Phalcon\Mvc\Controller
 	/**
          * Confirms an e-mail, if the user must change its password then changes it
     */
-	public function confirmEmail2Action()
-	{
+	public function confirmEmail2Action(){
 		if ($this->request->isPost()) {
 			if ($this->request->getPost()) {
 				$this->response->setContentType('application/json');
@@ -217,8 +216,7 @@ class AuthController extends \Phalcon\Mvc\Controller
 		}
 	}
 
-	public function changePasswordAction()
-	{
+	public function changePasswordAction(){
 		if ($this->request->isPost()) {
 			if ($this->request->getPost()) {
 				$this->response->setContentType('application/json');
