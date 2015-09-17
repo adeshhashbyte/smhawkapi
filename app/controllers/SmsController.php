@@ -200,9 +200,8 @@ class SmsController extends \Phalcon\Mvc\Controller
 			$user_id = $this->request->getPost('user_id');
 			$message = $this->request->getPost('message');
 			$datetime = $this->request->getPost('datetime');
-			$timezone = 'UTC';
-			$scheduled_date_user_tz = new DateTime($datetime, new DateTimeZone($timezone));
-			$scheduled_date_user_tz->setTimezone(new DateTimeZone('UTC'));
+			// $timezone = 'UTC';
+			$scheduled_date_user_tz = new DateTime($datetime);
 			$scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
 			$schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
 			$contacts_ids = explode(',', $contact_ids);
@@ -213,7 +212,6 @@ class SmsController extends \Phalcon\Mvc\Controller
 				$numbers[] =$contact->number;
 				$contact_id[]=$contact->id;
 			}
-			print_r($schedule_date);die;
 			$data = $this->sheduleSMSProcessData(array(
 				'message' => $message,
 				'user_id' => $user_id,
@@ -269,6 +267,7 @@ class SmsController extends \Phalcon\Mvc\Controller
 		$data = array(
 			'status'=>'success',
 			'id'=>$shedulesms->id,
+			'msg'=>'Message has been Shedule',
 			'code'=>2
 			);
 		return $data;

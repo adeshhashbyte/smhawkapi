@@ -227,6 +227,8 @@ class UserController extends \Phalcon\Mvc\Controller
 					'user_id' => $user_id,
 					'email' => $email,
 					'address' => $address,
+					'updated_at'=> date("Y-m-d H:i:s"),
+					'created_at'=> date("Y-m-d H:i:s")
 					));
 				if($contact->save()){
 					$data = array(
@@ -274,6 +276,8 @@ class UserController extends \Phalcon\Mvc\Controller
 					'user_id' => $user_id,
 					'email' => $email,
 					'address' => $address,
+					'updated_at'=> date("Y-m-d H:i:s"),
+					'created_at'=> date("Y-m-d H:i:s")
 					));
 				$contact->save();
 				$data = array(

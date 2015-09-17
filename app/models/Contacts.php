@@ -119,6 +119,14 @@ class Contacts extends \Phalcon\Mvc\Model
         }
         return $numbers;
     }
+    public static function getNumbers($contact_ids){
+        $numbers = array();
+        foreach ($contact_ids as $contact_id) {
+          $result = Contacts::findFirst("id= '$contact_id'");
+          $numbers[] = $result->number;
+        }
+         return implode(',',$numbers);
+    }
     public static function getContactDeleted($user_id,$number){
         $sql = "SELECT * FROM contacts WHERE user_id=$user_id AND number LIKE '%$number%'";
         $contact = new Contacts();

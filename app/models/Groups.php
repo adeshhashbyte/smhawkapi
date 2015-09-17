@@ -68,18 +68,31 @@ class Groups extends \Phalcon\Mvc\Model
             'permissions' => 'permissions', 
             'created_at' => 'created_at', 
             'updated_at' => 'updated_at'
-        );
+            );
     }
 
     public static function getGroupName($group_ids){
         $name = array();
         foreach ($group_ids as $group_id) {
-        $result = Groups::findFirst("id= '$group_id'");
-        if($result->id){
-        $name[] = $result->name;
-        }
+            $result = Groups::findFirst("id= '$group_id'");
+            if($result->id){
+                $name[] = $result->name;
+            }
         }
         return implode(',',$name);
+    }
+    public static function getGroupNumber($group_ids){
+        $number = array();
+        foreach ($group_ids as $group_id) {
+            $result = Groups::findFirst("id= '$group_id'");
+            if($result->id){
+                $groucontact = GroupContact::find("group_id='$group_id'");
+                foreach ($groucontact as $group_data) {
+                    $number[]=$group_data->contacts->number;
+                }
+            }
+        }
+        return implode(',',$number);
     }
 
 }

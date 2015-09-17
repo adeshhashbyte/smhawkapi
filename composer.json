@@ -4,6 +4,7 @@
 	"license": "MIT",
 	"require": {
 		"silex/silex": "~1.1",
-		"swiftmailer/swiftmailer": "v5.4.0"
+		"swiftmailer/swiftmailer": "v5.4.0",
+		"danzabar/phalcon-cli": "1.x"
 	}
 }
