@@ -200,10 +200,14 @@ class SmsController extends \Phalcon\Mvc\Controller
 			$user_id = $this->request->getPost('user_id');
 			$message = $this->request->getPost('message');
 			$datetime = $this->request->getPost('datetime');
-			// $timezone = 'UTC';
-			$scheduled_date_user_tz = new DateTime($datetime);
-			$scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
-			$schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
+			$timezone = 'UTC';
+			$scheduled_date_user_tz = new DateTime($datetime, new DateTimeZone($timezone));
+            $scheduled_date_user_tz->setTimezone(new DateTimeZone('UTC'));
+            $scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
+            $schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
+			// $scheduled_date_user_tz = new DateTime($datetime);
+			// $scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
+			// $schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
 			$contacts_ids = explode(',', $contact_ids);
 			$contacts = Contacts::find('id IN ('.$contact_ids.')');
 			$numbers = array();
