@@ -79,8 +79,17 @@ class HistoryController extends \Phalcon\Mvc\Controller
 				));
 			$user_history = array();
 			foreach ($history as $value) {
-				switch($value->type)
-				{	
+				$color ='';
+				if($value->status=="PENDING"){
+					$icon = "fa-calendar";
+					$color = "scheduled";
+				}else if($value->status=="SUCCESS"){
+					$icon = "fa-check";
+				}else if($value->status=="FAILED"){
+					$icon = "fa-times";
+					$color = "failed";
+				}
+				switch($value->type){	
 					case 'GROUPID':
 					$result =Groups::getGroupName(json_decode($value->reciever));
 					break;
@@ -101,6 +110,9 @@ class HistoryController extends \Phalcon\Mvc\Controller
 						"name" =>$result,
 						$value->type => json_decode($value->reciever),
 						'date' => date('M d,Y, H:i A',strtotime($value->updated_at)),
+						'status'=>$value->status,
+						'icon'=>$icon,
+						'color'=>$color
 						);
 				}
 			}
