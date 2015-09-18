@@ -93,7 +93,7 @@ class SmsHistory extends \Phalcon\Mvc\Model
     }
 
     public static function getData($user_id){
-        $sql = "SELECT p1.*,p2.counts FROM sms_history p1 INNER JOIN (SELECT max(id) MaxPostDate, reciever,COUNT(*) counts FROM sms_history GROUP BY reciever) p2  ON p1.reciever = p2.reciever AND p1.id = p2.MaxPostDate WHERE user_id = $user_id AND status <> 'PENDING'  order by p1.id desc";
+        $sql = "SELECT p1.*,p2.counts FROM sms_history p1 INNER JOIN (SELECT max(id) MaxPostDate, reciever,COUNT(*) counts FROM sms_history GROUP BY reciever) p2  ON p1.reciever = p2.reciever AND p1.id = p2.MaxPostDate WHERE user_id = $user_id  order by p1.id desc";
         $smshistory = new SmsHistory();
         return new Resultset(null, $smshistory, $smshistory->getReadConnection()->query($sql));
     }
