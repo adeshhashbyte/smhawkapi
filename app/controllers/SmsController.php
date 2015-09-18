@@ -1,5 +1,5 @@
 <?php
-
+use Phalcon\Http\Response;
 class SmsController extends \Phalcon\Mvc\Controller
 {
 	public function initialize() {
@@ -71,12 +71,23 @@ class SmsController extends \Phalcon\Mvc\Controller
 			$contact_number = explode(',', $contact_number);
 			$message = $this->request->getPost('message');
 			$user_id = $this->request->getPost('user_id');
+			$contact_ids = array();
+			foreach ($contact_number as $number) {
+				$con_data = Contacts::findFirst("number LIKE '%$number%' AND user_id=$user_id AND deleted=0");
+				if($con_data){
+					$contact_ids[] =$con_data->id;
+					$type = "CONTACTID";
+				}else{
+					$contact_ids[] = $number;
+					$type = "NUMBER";
+				}
+			}
 			$data = $this->sendSmsProcessData(array(
 				'message' => $message,
 				'user_id' => $user_id,
-				'ids'=> $contact_number,
-				'type'=>"NUMBER",
-				'contacts'=>$contact_number
+				'ids'=>  $contact_ids,
+				'type'=> $type,
+				'contacts'=>$contact_ids
 				));
 			$this->response->setContent(json_encode($data));
 			$this->response->send();
@@ -202,9 +213,9 @@ class SmsController extends \Phalcon\Mvc\Controller
 			$datetime = $this->request->getPost('datetime');
 			$timezone = 'UTC';
 			$scheduled_date_user_tz = new DateTime($datetime, new DateTimeZone($timezone));
-            $scheduled_date_user_tz->setTimezone(new DateTimeZone('UTC'));
-            $scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
-            $schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
+			$scheduled_date_user_tz->setTimezone(new DateTimeZone('UTC'));
+			$scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
+			$schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
 			// $scheduled_date_user_tz = new DateTime($datetime);
 			// $scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
 			// $schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
