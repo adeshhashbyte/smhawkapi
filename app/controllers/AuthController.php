@@ -123,6 +123,7 @@ class AuthController extends \Phalcon\Mvc\Controller
 						'used'=>$user->smsbalance->used,
 						'balance'=>$user->smsbalance->balance,
 						);
+					$emilsend = Users::onsocialSignUpSuccess($data);
 				}
 			}
 			$this->response->setContent(json_encode($data));

@@ -203,8 +203,7 @@ class Users extends \Phalcon\Mvc\Model
     /**
      * Independent Column Mapping.
      */
-    public function columnMap()
-    {
+    public function columnMap(){
         return array(
             'id' => 'id', 
             'sender_id' => 'sender_id', 
@@ -231,6 +230,22 @@ class Users extends \Phalcon\Mvc\Model
             'remember_token' => 'remember_token', 
             'avatar' => 'avatar'
         );
+    }
+    public static function onsocialSignUpSuccess($user){
+        $sendmail= new Mail();
+        $sendmail->send(
+            array(
+                $user['email'] => $user['email']
+                ),
+            'Welcome Email',
+            'success',
+            array(
+                'content' => 'Welcome Email',
+                'message' => 'You  have successfully created a account',
+                'name' =>$user['first_name'],
+                'email'=>$user['email']
+                )
+            );
     }
 
 }
