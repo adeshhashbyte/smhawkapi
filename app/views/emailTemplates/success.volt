@@ -14,6 +14,7 @@
 				SMHAWK!. Enjoy!
 				<br>
 			</p>
+			<img class="fishy" src="http://m.smhawk.in/app/assets/images/logo.png">
 		</td>
 	</tr>
 </tbody>
