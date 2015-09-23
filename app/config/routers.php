@@ -4,6 +4,10 @@ $router->add('/confirm/{code}/{email}', array(
         'controller' => 'auth',
         'action' => 'confirmEmail'
 ));
+$router->add('/contact-list', array(
+        'controller' => 'user',
+        'action' => 'contactList'
+));
 $router->add('/bonus', array(
         'controller' => 'smspackage',
         'action' => 'bonusPlans'
@@ -35,5 +39,9 @@ $router->add('/payment-failer', array(
 $router->add('/shedule-sms', array(
         'controller' => 'sms',
         'action' => 'sheduleSMS'
+));
+$router->add('/auth-data', array(
+        'controller' => 'auth',
+        'action' => 'getSocialData'
 ));
 return $router;

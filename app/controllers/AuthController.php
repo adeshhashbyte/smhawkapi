@@ -11,6 +11,16 @@ class AuthController extends \Phalcon\Mvc\Controller
 
 	public function indexAction() {
 	}
+	public function getSocialDataAction() {
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$auth = $this->request->getPost("auth");
+			$auth_data = array();
+			$auth_data = Networks::findFirst("platform = '$auth'")->toArray();
+			$this->response->setContent(json_encode(array("auth_data"=>$auth_data)));
+			$this->response->send();
+		}
+	}
 	public function loginAction() {
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
