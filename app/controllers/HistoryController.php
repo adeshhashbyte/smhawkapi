@@ -121,8 +121,7 @@ class HistoryController extends \Phalcon\Mvc\Controller
 		}
 	}
 
-	private function humanTiming($created_at)
-	{
+	private function humanTiming($created_at){
 		$time = strtotime($created_at);
         $time = time() - $time; // to get the time since that moment
         if($time < 5){
@@ -160,6 +159,7 @@ class HistoryController extends \Phalcon\Mvc\Controller
     					'new_sms_balance' => $history->new_sms_balance,
     					'date' => date('M d, Y',strtotime($history->updated_at)),
     					'time' => date('M d,Y, H:i A',strtotime($history->updated_at)),
+    					'status'=>$history->status
     					);
     			}
     		}
