@@ -6,12 +6,10 @@ class UserController extends \Phalcon\Mvc\Controller
 	public function initialize() {
 		$this->view->disable();
 	}
-	public function indexAction()
-	{
+	public function indexAction(){
 
 	}
-	public function registerAction()
-	{
+	public function registerAction(){
 		$this->response->setContentType('application/json');
 		$email = $this->request->getPost('email');
 		$first_name = $this->request->getPost('first_name');
@@ -27,8 +25,7 @@ class UserController extends \Phalcon\Mvc\Controller
 		$this->response->send();
 	}
 
-	public function passwordResetViaEmailAction()
-	{
+	public function passwordResetViaEmailAction(){
 		$this->response->setContentType('application/json');
 		$email = $this->request->getPost('email');
 		$user = Users::findFirstByEmail($email);
@@ -146,34 +143,28 @@ class UserController extends \Phalcon\Mvc\Controller
 			$user_id = $this->request->getPost('user_id');
 			$email = $this->request->getPost('email');
 			$number = $this->request->getPost('number');
-			// $user = Users::findFirst("id = '$user_id'");
-			$user = Users::findFirstByEmail($email);
-			if($user){
-				if($user->id!=$user_id){
-					$msg ="Already Exist";	
-				}else{
-					$msg = "kuch ni";
-					if($user->number!=$number){
-					$user->number = $number;
-					}
-				}
-			}else{
-				$msg ="emil bhejni h";
-			}
-			// if($email==$anotheruser->id){
-			// $user->number = $number;
-			// }else{
+			$user = Users::findFirst("id = '$user_id'");
+			$user->number = $number;
+			if($user->save()){
+				$data = array(
+					'status'=>'success',
+					'user_id'=>$user->id,
+					'first_name'=>$user->first_name,
+					'last_name'=>$user->last_name,
+					'sender_id'=>$user->sender_id,
+					'company'=>$user->company,
+					'email'=>$user->email,
+					'number'=>$user->number,
+					'admin_password_enable'=>$user->admin_password_enable,
+					'contacts_invisible_mask'=>$user->contacts_invisible_mask
+					);
+				$data['history']=array(
+					'used'=>$user->smsbalance->used,
+					'balance'=>$user->smsbalance->balance,
+					);
 
-			// }
-			// $user->email = $email;
-			// if($user->save()){
-			// 	$data = array(
-			// 		'status'=>'success',
-			// 		'email'=>$user->email,
-			// 		'number'=>$user->number,
-			// 		);
-			// }
-			$this->response->setContent(json_encode($msg));
+			}
+			$this->response->setContent(json_encode($data));
 			$this->response->send();	
 		}
 	}
@@ -342,6 +333,29 @@ class UserController extends \Phalcon\Mvc\Controller
 			$this->response->setContent(json_encode($data));
 			$this->response->send();	
 		}
+	}
+
+	public function generateOTPAction(){
+		if ($this->request->isPost() == true) {
+			$this->response->setContentType('application/json');
+			$password = mt_rand(100000, 999999);
+			$reference_id = mt_rand(1000, 9999);
+			$number = $this->request->getPost('number');
+			$sms = 'Enter verification code ' . $password . ' to verify your phone number refrence id is ref-' . $reference_id;
+            $data = $this->sendSmsProcessData(array('to' => $number,'message' => $sms,'sender_id' =>'SMHAWK'));
+			$this->response->setContent(json_encode(array('otp_password'=>$password,'ref_id'=>$reference_id)));
+			$this->response->send();
+		}	
+	}
+
+	private function sendSmsProcessData($sms_data) {
+		$sendmsgservice = new SMSGateway();
+		$data = array(
+				'to' => $sms_data['to'],
+				'message' => $sms_data['message'],
+				'sender_id' => $sms_data['sender_id'],
+				);
+		$response = $sendmsgservice->sendSMS($data);
 	}
 }
 

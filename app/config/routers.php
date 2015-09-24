@@ -44,4 +44,8 @@ $router->add('/auth-data', array(
         'controller' => 'auth',
         'action' => 'getSocialData'
 ));
+$router->add('/generate-password', array(
+        'controller' => 'user',
+        'action' => 'generateOTP'
+));
 return $router;
