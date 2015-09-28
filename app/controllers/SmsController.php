@@ -275,7 +275,9 @@ class SmsController extends \Phalcon\Mvc\Controller
 			$shedulesms->assign(array(
 				'sms_id' => $sms_history->id,
 				'shedule_date'=> $smsdata['schedule_date'],
-				'status' => "SHEDULED"
+				'status' => "SHEDULED",
+				'created_at' => date("Y-m-d H:i:s"),
+				'updated_at' => date("Y-m-d H:i:s")
 				));
 			$shedulesms->save();
 		}

@@ -28,6 +28,18 @@ class SheduleSms extends \Phalcon\Mvc\Model
     public $status;
 
     /**
+     *
+     * @var string
+     */
+    public $created_at;
+
+    /**
+     *
+     * @var string
+     */
+    public $updated_at;
+
+    /**
      * Independent Column Mapping.
      */
     public function columnMap()
@@ -36,7 +48,9 @@ class SheduleSms extends \Phalcon\Mvc\Model
             'id' => 'id', 
             'sms_id' => 'sms_id', 
             'shedule_date' => 'shedule_date', 
-            'status' => 'status'
+            'status' => 'status',
+            'created_at'=>'created_at',
+            'updated_at'=>'updated_at'
         );
     }
 

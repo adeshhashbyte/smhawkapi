@@ -106,7 +106,9 @@ class Contacts extends \Phalcon\Mvc\Model
         $name = array();
         foreach ($contact_ids as $contact_id) {
           $result = Contacts::findFirst("id= '$contact_id'");
+          if($result){
           $name[] = $result->name;
+          }
         }
         return implode(',',$name);
     }

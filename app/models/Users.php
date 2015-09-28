@@ -243,7 +243,7 @@ class Users extends \Phalcon\Mvc\Model
                 'content' => 'Welcome Email',
                 'message' => 'You  have successfully created a account',
                 'name' =>$user['first_name'],
-                'email'=>$user['email']
+                'email'=>$user['email'],
                 )
             );
     }
