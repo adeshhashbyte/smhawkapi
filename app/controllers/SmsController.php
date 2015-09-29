@@ -207,7 +207,7 @@ class SmsController extends \Phalcon\Mvc\Controller
 	public function sheduleSMSAction(){
 		if ($this->request->isPost() == true) {
 			$this->response->setContentType('application/json');
-			$contact_ids =$this->request->getPost('contact_ids');
+			$type = $this->request->getPost('type');
 			$user_id = $this->request->getPost('user_id');
 			$message = $this->request->getPost('message');
 			$datetime = $this->request->getPost('datetime');
@@ -219,19 +219,32 @@ class SmsController extends \Phalcon\Mvc\Controller
 			// $scheduled_date_user_tz = new DateTime($datetime);
 			// $scheduled_date_UTC = $scheduled_date_user_tz->format('Y-m-d H:i:s');
 			// $schedule_date = date('Y-m-d H:i:s', strtotime($scheduled_date_UTC));
-			$contacts_ids = explode(',', $contact_ids);
-			$contacts = Contacts::find('id IN ('.$contact_ids.')');
-			$numbers = array();
-			$contact_id = array();
-			foreach($contacts as $contact){
-				$numbers[] =$contact->number;
-				$contact_id[]=$contact->id;
+			if($type=="CONTACTID"){
+				$contact_ids =$this->request->getPost('contact_ids');
+				$contacts_ids = explode(',', $contact_ids);
+				$contacts = Contacts::find('id IN ('.$contact_ids.')');
+				$numbers = array();
+				$contact_id = array();
+				foreach($contacts as $contact){
+					$numbers[] =$contact->number;
+					$contact_id[]=$contact->id;
+				}
+			}
+			if($type=="GROUPID"){
+				$group_id = $this->request->getPost('group_id');
+				$groucontact = GroupContact::find("group_id=$group_id");
+				$groucontactlist = array();
+				$contact_id = array();
+				foreach ($groucontact as $group_data) {
+					$numbers[]=$group_data->contacts->number;
+				}
+				$contact_id = explode(',',$group_id);
 			}
 			$data = $this->sheduleSMSProcessData(array(
 				'message' => $message,
 				'user_id' => $user_id,
 				'ids'=> $contact_id,
-				'type'=>"CONTACTID",
+				'type'=> $type,
 				'contacts'=>$numbers,
 				'schedule_date'=>$schedule_date
 				));
